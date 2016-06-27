@@ -13,35 +13,35 @@
         </div>
     </form>
 
-    <h3>Lemmas</h3>
+    <h3>Lemmas (Same-level)</h3>
     <ol>
     {% for lemma in lemma_names %}
         <li>{{lemma}}</li>
     {% endfor %}
     </ol>
 
-    <h3>Direct hypernyms</h3>
+    <h3>Direct hypernyms (Mid-high level)</h3>
     <ol>
     {% for hypernym in hypernyms %}
         <li>{{hypernym}}</li>
     {% endfor %}
     </ol>
 
-    <h3>Direct hyponyms/troponyms</h3>
+    <h3>Direct hyponyms/troponyms (Mid-low level)</h3>
     <ol>
     {% for hyponym in hyponyms %}
         <li>{{hyponym}}</li>
     {% endfor %}
     </ol>
 
-    <h3>Nested hypernyms</h3>
+    <h3>Nested hypernyms (High-level)</h3>
     <ol>
     {% for hyper in hyper_hyper %}
         <li>{{hyper}}</li>
     {% endfor %}
     </ol>
 
-    <h3>Nested hyponyms/troponyms</h3>
+    <h3>Nested hyponyms/troponyms (Low-level)</h3>
     <ol>
     {% for hypo in hypo_hypo %}
         <li>{{hypo}}</li>
