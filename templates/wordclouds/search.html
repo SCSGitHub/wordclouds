@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WordNet Search</title>
+</head>
+<body>
+    <form id="search_form" name="search_form" method="GET" action="{% url 'wordclouds:search' %}">
+        <div>
+            <label for="word">Word:</label>
+            <input type="text" id="word_query" name="word_query" />
+            <input type="submit" value="Search">
+        </div>
+    </form>
+
+    <h3>Lemmas</h3>
+    <ol>
+    {% for lemma in lemma_names %}
+        <li>{{lemma}}</li>
+    {% endfor %}
+    </ol>
+
+    <h3>Direct hypernyms</h3>
+    <ol>
+    {% for hypernym in hypernyms %}
+        <li>{{hypernym}}</li>
+    {% endfor %}
+    </ol>
+
+    <h3>Direct hyponyms</h3>
+    <ol>
+    {% for hyponym in hyponyms %}
+        <li>{{hyponym}}</li>
+    {% endfor %}
+    </ol>
+
+    <h3>Nested hypernyms</h3>
+    <ol>
+    {% for hyper in hyper_hyper %}
+        <li>{{hyper}}</li>
+    {% endfor %}
+    </ol>
+
+    <h3>Nested hyponyms</h3>
+    <ol>
+    {% for hypo in hypo_hypo %}
+        <li>{{hypo}}</li>
+    {% endfor %}
+    </ol>
+</body>
+</html>
