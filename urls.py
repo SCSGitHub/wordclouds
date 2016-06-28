@@ -20,4 +20,5 @@ app_name = 'wordclouds'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^search/$', views.search, name='search'),
+    url(r'^synonyms/$', views.fetch_synonyms, name='synonyms'),
 ]

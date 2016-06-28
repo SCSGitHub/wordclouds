@@ -53,5 +53,12 @@
         <li>{{hypo}}</li>
     {% endfor %}
     </ol>
+
+    <h3>Sisters (Same-level, for reference only)</h3>
+    <p>Count: {{ sisters|length }}</p>
+    <ol>
+    {% for sister in sisters %}
+        <li>{{sister}}</li>
+    {% endfor %}
 </body>
 </html>
