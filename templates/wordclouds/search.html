@@ -17,47 +17,47 @@
 
     <h3>Lemmas (Same-level)</h3>
     <ol>
-    {% for lemma in lemma_names %}
+    {% for lemma in word.lemmas %}
         <li>{{lemma}}</li>
     {% endfor %}
     </ol>
 
     <h3>Direct hypernyms (Mid-high level)</h3>
-    <p>Count: {{ hypernyms|length }}</p>
+    <p>Count: {{ word.hypernyms|length }}</p>
     <ol>
-    {% for hypernym in hypernyms %}
+    {% for hypernym in word.hypernyms %}
         <li>{{hypernym}}</li>
     {% endfor %}
     </ol>
 
     <h3>Direct hyponyms/troponyms (Mid-low level)</h3>
-    <p>Count: {{ hyponyms|length }}</p>
+    <p>Count: {{ word.hyponyms|length }}</p>
     <ol>
-    {% for hyponym in hyponyms %}
+    {% for hyponym in word.hyponyms %}
         <li>{{hyponym}}</li>
     {% endfor %}
     </ol>
 
     <h3>Nested hypernyms (High-level)</h3>
-    <p>Count: {{ hyper_hyper|length }}</p>
+    <p>Count: {{ word.inherited_hypernyms|length }}</p>
     <ol>
-    {% for hyper in hyper_hyper %}
+    {% for hyper in word.inherited_hypernyms %}
         <li>{{hyper}}</li>
     {% endfor %}
     </ol>
 
     <h3>Nested hyponyms/troponyms (Low-level)</h3>
-    <p>Count: {{ hypo_hypo|length }}</p>
+    <p>Count: {{ word.inherited_hyponyms|length }}</p>
     <ol>
-    {% for hypo in hypo_hypo %}
+    {% for hypo in word.inherited_hyponyms %}
         <li>{{hypo}}</li>
     {% endfor %}
     </ol>
 
     <h3>Sisters (Same-level, for reference only)</h3>
-    <p>Count: {{ sisters|length }}</p>
+    <p>Count: {{ word.sisters|length }}</p>
     <ol>
-    {% for sister in sisters %}
+    {% for sister in word.sisters %}
         <li>{{sister}}</li>
     {% endfor %}
 </body>
