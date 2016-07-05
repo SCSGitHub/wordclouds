@@ -14,6 +14,7 @@ class WordExtendedSerializer(WordSerializer):
     hypernyms = WordSerializer(many=True, required=False)
 
 class WordSenseSerializer(serializers.Serializer):
+    surface_form = serializers.CharField()
     lemma = serializers.CharField()
     senses = WordSerializer(many=True)
 
@@ -67,6 +68,7 @@ class WordSense():
     def __init__(self, surface_form):
         lemmatizer = WordNetLemmatizer()
         lemma = lemmatizer.lemmatize(surface_form)
+        self.surface_form = surface_form
         self.lemma = lemma
         self.__set_senses()
 
