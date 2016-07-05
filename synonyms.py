@@ -1,7 +1,7 @@
 from nltk.corpus import wordnet
 from rest_framework import serializers
 
-class WordSerializer(serializers.Serializer):
+class SynonymSerializer(serializers.Serializer):
     lemmas = serializers.ListField()
     hypernyms = serializers.ListField()
     hyponyms = serializers.ListField()
@@ -9,13 +9,17 @@ class WordSerializer(serializers.Serializer):
     inherited_hyponyms = serializers.ListField()
     sisters = serializers.ListField()
 
+"""
+Add properties and methods to modify those properties as needed.
+Ex. Could probably use transitive closures or root_hypernyms to get more hypernyms.
+"""
 
-class Word():
+class Synonym():
     lemmas = []
     hypernyms = []
     hyponyms = []
-    inherited_hypernyms = []
-    inherited_hyponyms = []
+    inherited_hypernyms = [] #2nd level only
+    inherited_hyponyms = [] #2nd level only
     sisters = []
 
     def __init__(self, rep_str):
