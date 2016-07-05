@@ -48,3 +48,13 @@ def fetch_word(request, word=''):
         return JSONResponse(WordExtendedSerializer(word_obj).data)
     else:
         return HttpResponse(status=400)
+
+def fetch_word_senses(request, word=''):
+    if request.method == 'GET' and len(request.GET) > 0 and len(request.GET['word']) > 0:
+        word = request.GET['word']
+
+    if len(word) > 0:
+        word_obj = WordSense(word)
+        return JSONResponse(WordSenseSerializer(word_obj).data)
+    else:
+        return HttpResponse(status=400)

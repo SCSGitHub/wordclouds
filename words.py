@@ -13,6 +13,10 @@ class WordSerializer(serializers.Serializer):
 class WordExtendedSerializer(WordSerializer):
     hypernyms = WordSerializer(many=True, required=False)
 
+class WordSenseSerializer(serializers.Serializer):
+    lemma = serializers.CharField()
+    senses = WordSerializer(many=True)
+
 """
 Add properties and methods to modify those properties as needed.
 Ex. Could probably use transitive closures or root_hypernyms to get more hypernyms.
@@ -55,3 +59,17 @@ class Word():
     def __set_all_hypernyms(self, synset):
         hyper_func = lambda x: x.hypernyms()
         self.hypernyms = [Word(hypernym.name()) for hypernym in synset.closure(hyper_func)]
+
+class WordSense():
+    """
+
+    """
+    def __init__(self, surface_form):
+        lemmatizer = WordNetLemmatizer()
+        lemma = lemmatizer.lemmatize(surface_form)
+        self.lemma = lemma
+        self.__set_senses()
+
+    def __set_senses(self):
+        synsets = wordnet.synsets(self.lemma)
+        self.senses = [Word(synset.name()) for synset in synsets]
