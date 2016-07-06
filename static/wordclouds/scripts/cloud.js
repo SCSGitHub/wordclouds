@@ -6,12 +6,12 @@ var input_senses={
 		sense_type: "n",
 		synonym_list: [ 
 			[
-				{word:"tent", full:"tent.n.1"},
-				{word:"camp", full:"camp.v.1"},
+				{word:"tent", full:"tent.n.1", lemma:"tent"},
+				{word:"camp", full:"camp.v.1", lemma:"camp"},
 			],
 			[
-				{word:"be", full:"be.v.1"},
-				{word:"stand", full:"stand.v.1"},
+				{word:"be", full:"be.v.1", lemma:"be"},
+				{word:"stand", full:"stand.v.1", lemma:"stand"},
 			],
 		],
 	},	
@@ -20,15 +20,13 @@ var input_senses={
 		sense_type: "v",
 		synonym_list: [ 
 			[
-				{word:"chaos", full:"chaos.n.1"},
-				{word:"disorder", full:"disorder.v.1"},
-				{word:"randomness", full:"randomness.v.1"},
-				{word:"loss of structure", full:"loss_of_structure.v.1"},
-				{word:"diffusion", full:"diffusion.v.1"},
+				{word:"chaos", full:"chaos.n.1", lemma:"chaos"},
+				{word:"disorder", full:"disorder.v.1", lemma:"disorder"},
+				{word:"diffusion", full:"diffusion.v.1", lemma:"diffusion"},
 			],
 			[
-				{word:"wrong sense", full:"wrong_sense.n.1"},
-				{word:"information", full:"information.n.1"},
+				{word:"wrong sense", full:"wrong_sense.n.1", lemma:"wrond_sense"},
+				{word:"information", full:"information.n.1", lemma:"information"},
 			],
 		],
 	},
@@ -41,7 +39,7 @@ var cloud = [
 		sentence_word:"sample word",
 		syn_list:
 			[ 
-				{word:"similar_word", full:"similar_word.n.1"},
+				{word:"similar_word", full:"similar_word.n.1", lemma:"lemma", abstraction_level: "concrete"},
 			]
 	},
 ];
@@ -56,8 +54,8 @@ function addWord(me){
 	}
 	var new_word_text = $("#word_item_template").find("li").find(".word_text");
 	new_word_text.html(word_text);
-	new_word_text.parent().attr("full",word_text);//we don't know the sense and type
-	//ADD attribute of the "lemma"
+	new_word_text.parent().attr("full","");//we don't know the sense and type
+	new_word_text.parent().attr("lemma","");//we don't know the sense and type
 	var new_word = $("#word_item_template").html();
 	word_list_end.before(new_word);
 
@@ -136,6 +134,7 @@ function loadSenses(word_with_senses){
 				var new_word_text = new_word_li.find(".word_text");
 				new_word_text.html(synonym.word);
 				new_word_li.attr("full",synonym.full);
+				new_word_li.attr("lemma",synonym.lemma);
 				var new_word = $(new_word_text).parent().parent().html();
 				$(sense_list).append(new_word);
 			}
@@ -162,7 +161,7 @@ function loadSenses(word_with_senses){
 
 function submitCloud(){
 	//what do we need to do? 
-	//for each word-object in cloud, fill in syn_list[] with each {word, full}
+	//for each word-object in cloud, fill in syn_list[] with each {word, full, lemma}
 	var words_array = $("#sentence").find(".word_column");
 
 	for(var j = 0; j<words_array.length; j++){
@@ -178,7 +177,10 @@ function submitCloud(){
 			if(! $(word_li).hasClass("add_button")){
 				word_ = $(word_li).find(".word_text").html();
 				full_ = $(word_li).attr("full");
-				var word_to_add = {word:word_, full:full_};
+				lemma_ = $(word_li).attr("lemma"); //add this
+				abstraction_level_ = $(word_li).parent().attr("abstraction");
+
+				var word_to_add = {word:word_, full:full_, lemma:lemma_, abstraction_level:abstraction_level_};
 				cloud_column.syn_list.push(word_to_add);	
 			}			
 		}
