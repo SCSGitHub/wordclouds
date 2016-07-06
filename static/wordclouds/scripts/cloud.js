@@ -74,13 +74,19 @@ function loadSentence(){
 		var word_of_sentence = sentence[i];
 		var li = $("#word_sentence_template").find("li");
 		$(li).attr("word",word_of_sentence);
-		var sentence_div = li.find("div");
+		var sentence_div = li.find(".word_column_div");
 		$(sentence_div).attr("id", "word_sentence_"+i+"");
-		var sentence_list = sentence_div.find("ul");
+		$(sentence_div).find(".word_name").html(word_of_sentence);
+
+		//bins for synonym and abstract
 		var add_button = $("#add_button_template").html();
-		$(sentence_list).append(add_button);
-		$(sentence_div).find("h4").html(word_of_sentence);
+		var concrete_list = sentence_div.find(".concrete");
+		var abstract_list = sentence_div.find(".abstract");
+		$(concrete_list).append(add_button);
+		$(abstract_list).append(add_button);
+		
 		var prepared_column = $("#word_sentence_template").html();
+		
 		$("#sentence").append(prepared_column);
 		$('div[id=word_sentence_'+i+']').collapsible({
 			expand: function(event){
@@ -100,7 +106,11 @@ function loadSentence(){
 				}
 			},
 		});
-		$("#word_sentence_template").html(original_template);
+		$('.collapsible3').collapsible({
+			collapsed: false,
+		});
+
+		$("#word_sentence_template").html(original_template);//reset
 		//also add it into the output structure
 		var sentence_word = { sentence_word: word_of_sentence, syn_list: []};
 		cloud.push(sentence_word);
@@ -162,12 +172,15 @@ function submitCloud(){
 		cloud_column.sentence_word = sentence_word_;
 
 		word_li_array = $("#word_sentence_"+j).find("li");
-		for (var i=0; i<word_li_array.length-1; i++){ //don't include the "add word" <li> element
+		for (var i=0; i<word_li_array.length; i++){ 
+		//don't include the "add word" <li> element
 			word_li = word_li_array[i];
-			word_ = $(word_li).find(".word_text").html();
-			full_ = $(word_li).attr("full");
-			var word_to_add = {word:word_, full:full_};
-			cloud_column.syn_list.push(word_to_add);				
+			if(! $(word_li).hasClass("add_button")){
+				word_ = $(word_li).find(".word_text").html();
+				full_ = $(word_li).attr("full");
+				var word_to_add = {word:word_, full:full_};
+				cloud_column.syn_list.push(word_to_add);	
+			}			
 		}
 		cloud[j]=cloud_column;
 	}
