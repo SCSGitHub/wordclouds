@@ -8,7 +8,7 @@ class WordSerializer(serializers.Serializer):
     sense_number = serializers.IntegerField()
     pos = serializers.CharField()
     lemma = serializers.CharField()
-    wordnet_lemmas = serializers.ListField()
+    brothers = serializers.ListField()
 
 class WordExtendedSerializer(WordSerializer):
     hypernyms = WordSerializer(many=True, required=False)
@@ -31,7 +31,7 @@ class Word():
         sense_number: The sense number from 'sense'
         pos: The POS from 'sense'
         lemma: The base form of the word.
-        wordnet_lemmas: Lemmas returned by wordnet
+        brothers: "Lemmas" returned by wordnet. "Brother" word forms
         hypernyms: List of hypernym Word objects (optional)
     """
 
@@ -41,14 +41,14 @@ class Word():
         self.sense = synset.name()
         self.pos = synset.pos()
         self.sense_number = synset.name().split('.')[-1]
-        #self.wordnet_lemmas = [lemma.name() for lemma in synset.lemmas()]
-        self.wordnet_lemmas = synset.lemma_names()
+        #self.brothers = [lemma.name() for lemma in synset.lemmas()]
+        self.brothers = synset.lemma_names()
         if type(surface_form) is str and len(surface_form) > 0:
             lemmatizer = WordNetLemmatizer()
             self.lemma = lemmatizer.lemmatize(lemma)
             self.surface_form = surface_form
         else:
-            self.lemma = self.wordnet_lemmas[0]
+            self.lemma = self.brothers[0]
             self.surface_form = self.lemma
 
         if get_hypernyms:
