@@ -4,20 +4,21 @@
 	<meta charset="utf-8">
 	<title>Cloud App</title>
 
+	{% load staticfiles %}
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
-	<link rel="stylesheet" href="cloud_style.css">
+	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
 
 </head>
 <body>
 	<div data-role="header">
 		<div id="instructions">
 			<h1>Word Cloud Task</h1>
-			<p> Your goal is to find as many synonyms and related words as possible for each of the words in the sentence. 
+			<p> Your goal is to find as many synonyms and related words as possible for each of the words in the sentence.
 			<br>
 			You can add words by typing them in, or drag in suggested synonyms from the Word Bank. Click on each word of the sentence to begin adding synonyms. Add synonyms for all words in the sentence.
 			<br>
@@ -74,7 +75,7 @@
     </li>
 </div>
 
-<script src="cloud.js"></script>
+<script src="{% static 'wordclouds/scripts/cloud.js' %}"></script>
 
 </body>
 </html>

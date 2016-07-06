@@ -30,6 +30,9 @@ def search(request):
 
     return render(request, 'wordclouds/search.html')
 
+def cloud(request):
+    return render(request, 'wordclouds/cloud.html')
+
 def fetch_synonyms(request, word=''):
     if request.method == 'GET' and len(request.GET) > 0 and len(request.GET['word']) > 0:
         word = request.GET['word']

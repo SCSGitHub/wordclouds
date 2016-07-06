@@ -19,6 +19,7 @@ from . import views
 app_name = 'wordclouds'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^cloud/$', views.cloud, name='cloud'),
     url(r'^search/$', views.search, name='search'),
     url(r'^synonyms/(?P<word>[\w\d._-]+)?$', views.fetch_synonyms, name='synonyms'),
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
