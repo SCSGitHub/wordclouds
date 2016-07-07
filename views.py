@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from rest_framework.renderers import JSONRenderer
+from .problems import *
 from .synonyms import *
 from .words import *
 
@@ -20,7 +21,7 @@ def index(request):
 def search(request):
     template = loader.get_template('wordclouds/search.html')
     if request.method == 'GET' and len(request.GET) > 0:
-        if len(request.GET['word_query']) > 0:
+        if request.GET['word_query']:
             word_obj = Synonym(request.GET['word_query'])
             return render(request, 'wordclouds/search.html',
                 {'query': request.GET['word_query'],
@@ -33,11 +34,20 @@ def search(request):
 def cloud(request):
     return render(request, 'wordclouds/cloud.html')
 
+def fetch_problem(request, problem_id):
+    problem_id = int(problem_id)
+    if request.method == 'GET' and problem_id > 0:
+        #create problem object
+        problem = Problem(problem_id)
+        return JSONResponse(ProblemSerializer(problem).data)
+    else:
+        return HttpResponse(status=400)
+
 def fetch_synonyms(request, word=''):
     if request.method == 'GET' and len(request.GET) > 0 and len(request.GET['word']) > 0:
         word = request.GET['word']
 
-    if len(word) > 0:
+    if word:
         return JSONResponse(SynonymSerializer(Synonym(word)).data)
     else:
         return HttpResponse(status=400)
@@ -46,17 +56,18 @@ def fetch_word(request, word=''):
     if request.method == 'GET' and len(request.GET) > 0 and len(request.GET['word']) > 0:
         word = request.GET['word']
 
-    if len(word) > 0:
+    if word:
         word_obj = Word(word, get_hypernyms=True)
         return JSONResponse(WordExtendedSerializer(word_obj).data)
     else:
         return HttpResponse(status=400)
 
 def fetch_word_senses(request, word=''):
+    #if query string used
     if request.method == 'GET' and len(request.GET) > 0 and len(request.GET['word']) > 0:
         word = request.GET['word']
 
-    if len(word) > 0:
+    if word:
         word_obj = WordSense(word)
         return JSONResponse(WordSenseSerializer(word_obj).data)
     else:
