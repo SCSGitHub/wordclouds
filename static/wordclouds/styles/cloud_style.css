@@ -51,14 +51,15 @@ h2{
 }
 
 #left-menu{
-	background-color: #08b;
+	background-color: #f6f6f6;
 	width: 25%;
+	color: #333;
 }
 
 #left-menu > .ui-collapsible-content {
 
 }
-#submit{
+#submit, #next{
 	background-color: rgba(20,200,20,.4);
 	padding: 5px;
 	margin:auto;
@@ -79,14 +80,43 @@ h2{
 
 .word_column_div.ui-collapsible-inset{
 	width: 22%;
+	background: rgb(46, 119, 146);
+	color: #333;
+}
+
+/*.word_column_div.ui-collapsible-inset > h4 > a{
+    background-color: none !important ;
+    border-color: none;
+    color: #eee;
+    text-shadow: none;
+}
+*/
+a.ui-collapsible-heading-toggle.ui-btn.ui-btn-icon-left.ui-btn-inherit.ui-icon-minus {
+    background-color: inherit;
+    text-shadow: none;
+    color: inherit;
+    border:none;
+}
+a.ui-collapsible-heading-toggle.ui-btn.ui-btn-icon-left.ui-btn-inherit.ui-icon-minus:hover {
+    background-color: inherit;
+    text-shadow: none;
+    color: inherit;
+}
+a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inherit {
+    background-color: inherit;
 }
 
 .word_column_div.ui-collapsible-collapsed{
 	width:12%;
+	background: #eee;
 }
 
 .collapsible3{
 	background-color: #f6f6f6;
+}
+
+.ui-btn-minus{
+	color: #247;
 }
 
 #score_box{
@@ -102,8 +132,21 @@ h2{
     right: 1em;
 }
 
+.word_column_div.no_synonyms {
+	color: #444;
+	background-color: #ccc;
+	border:none;
+	text-shadow:none;
+}
+a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inherit {
+    border: none;
+    color: inherit;
+    text-shadow: none;
+}
 
 *:focus{
 	outline:none;
 	box-shadow:none !important;
 }
+
+

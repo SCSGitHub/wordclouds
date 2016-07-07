@@ -20,10 +20,12 @@
 			<div style="width:100%; float:left"><h1 id="title">Word Cloud Game</h1> <div id="score_box">Score: <div id="score" style="float:right">0</div></div></div>
 			
 			<p> Your goal is to find as many synonyms and related words as possible for each of the words in the sentence.
-			<br>
-			You can add words by typing them in, or drag in suggested synonyms from the Word Bank. Click on each word of the sentence to begin adding synonyms. Add synonyms for all words in the sentence.
-			<br>
-			Click submit when you have finished.
+			<br><br>
+			You can add words by typing them in, or drag in suggested synonyms from the Word Bank. Click on each word of the sentence to begin adding synonyms. Add synonyms for all words in the sentence, except any words that are 'greyed out' (it won't let you add any).
+			<br><br>
+			Only add synonyms that fit the meaning of the word in the sentence. If the sentence says "I had a blast at the party", then "explosion" is not a good synonym for "blast". "Fun" is be a better synonym.
+			<br><br>
+			Your score is the total number of words you've added to the cloud. Aim for a score of at least 40. Remember to think about whether a word goes in the abstract (generic) or concrete (specific) bin. Click submit when you have finished.
 			<br>
 			</p>
 		</div>
@@ -71,12 +73,12 @@
 		<div id="word_sentence_" class="quarter word_column_div" data-collapsed="true" >
 		    <h4 class="word_name">Word</h4>
 		    <div class="collapsible3">
-			    <h4 class="concrete_label">Concrete</h4>
+			    <h4 class="concrete_label">Concrete Synonyms</h4>
 			    <ul data-role="listview" class="sort word1 concrete" abstraction="concrete">
 			    </ul>
 		    </div>
 		    <div class="collapsible3">
-		    	<h4 class="abstract_label">Abstract</h4>
+		    	<h4 class="abstract_label">Abstract Synonyms</h4>
 			    <ul data-role="listview" class="sort word1 abstract" abstraction="abstract">
 			    </ul>
 		    </div>
