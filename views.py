@@ -34,6 +34,9 @@ def search(request):
 def cloud(request):
     return render(request, 'wordclouds/cloud.html')
 
+def cloud_training(request):
+    return render(request, 'wordclouds/cloud_training.html')
+
 def fetch_problem(request, problem_id):
     problem_id = int(problem_id)
     if request.method == 'GET' and problem_id > 0:

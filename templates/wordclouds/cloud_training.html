@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Cloud App</title>
+	<title>Cloud App Training</title>
 
 	{% load staticfiles %}
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
@@ -17,22 +17,16 @@
 <body>
 	<div data-role="header">
 		<div id="instructions">
-			<div style="width:100%; float:left"><h1 id="title">Word Cloud Game</h1> <div id="score_box">Score: <div id="score" style="float:right">0</div></div></div>
-			
-			<p> Your goal is to find as many synonyms and related words as possible for each of the words in the sentence.
-			<br>
-			You can add words by typing them in, or drag in suggested synonyms from the Word Bank. Click on each word of the sentence to begin adding synonyms. Add synonyms for all words in the sentence.
-			<br>
-			Click submit when you have finished.
-			<br>
-			</p>
+			<p> Learn how to complete the task before beginning.
+			<p> Add synonyms for each word by typing them into the "add word" box and pressing 'enter'
+			<p> Then, drag more related words from the Word Bank on the left. Only include words that have the same meaning in the context of the sentence.
 		</div>
 	</div>
 	<div data-role="main" class="ui-content" id="cloud-area">
 
-		<h2>Complete the task.... or else ... </h2>
+		<h2>Try completing this mini-cloud</h2>
 		<div id="left-menu" data-role="collapsible" data-collapsed="false" class="quarter">
-			<h4>Word Bank</h4>
+			<h4>Word Bank: "Cook"</h4>
 		</div>
 		<div id="sentence_container">
 			<ul id="sentence" class="ui-listview" data-role="listview">
@@ -40,8 +34,8 @@
 		</div>
 	</div>
 	<div data-role="footer" id="foot" style="padding:10px">
-		<h1> Thanks for completing the task. When you are finished, click submit </h1>
-		<input type="button" value="submit" id="submit" class="ui-btn" onclick="submitCloud()">
+		<h1> If you are ready to continue, click 'next' </h1>
+		<input type="button" value="next" id="next" class="ui-btn" onclick="next()">
 	</div>
 
 <!--TEMPLATES -->
@@ -51,6 +45,13 @@
 		<a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-icon-carat-r" title=""></a>
 	</li>
 </div>
+<div id="word_item_template_ex" style="display:none">
+	<li class="word_item ui-li-has-alt" sense="new.n.1">
+		<a href="#" class="ui-btn word_text">new</a>
+		<a class="ui-btn ui-icon-minus ui-btn-icon-left ui-btn-icon-notext ui-icon-carat-r" title=""></a>
+	</li>
+</div>
+
 <div id="add_button_template" style="display:none">
 	<li class="add_button ui-li-has-alt">
 		<a href="#" class="ui-btn">
@@ -61,14 +62,14 @@
 </div>
 <div id="word_sense_template" style="display:none">
 	<div class="sense_div" data-role="collapsible2" data-collapsed="false" >
-	    <h4>Sense (Type)</h4>
+	    <h4>"Cook" Word Bank</h4>
 	    <ul data-role="listview" class="sort word1">
 	    </ul>
     </div>
 </div>
 <div id="word_sentence_template" style="display:none">
 	<li class="word_column ui-li-has-alt">
-		<div id="word_sentence_" class="quarter word_column_div" data-collapsed="true" >
+		<div id="word_sentence_" class="quarter word_column_div" data-collapsed="false" >
 		    <h4 class="word_name">Word</h4>
 		    <div class="collapsible3">
 			    <h4 class="concrete_label">Concrete</h4>
@@ -85,7 +86,7 @@
     </li>
 </div>
 
-<script src="{% static 'wordclouds/scripts/cloud.js' %}"></script>
+<script src="{% static 'wordclouds/scripts/cloud_training.js' %}"></script>
 
 </body>
 </html>
