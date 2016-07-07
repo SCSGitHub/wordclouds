@@ -6,12 +6,12 @@ var input_senses={
 		sense_type: "n",
 		synonym_list: [ 
 			[
-				{word:"tent", full:"tent.n.1", lemma:"tent"},
-				{word:"camp", full:"camp.v.1", lemma:"camp"},
+				{word:"tent", sense:"tent.n.1", lemma:"tent"},
+				{word:"camp", sense:"camp.v.1", lemma:"camp"},
 			],
 			[
-				{word:"be", full:"be.v.1", lemma:"be"},
-				{word:"stand", full:"stand.v.1", lemma:"stand"},
+				{word:"be", sense:"be.v.1", lemma:"be"},
+				{word:"stand", sense:"stand.v.1", lemma:"stand"},
 			],
 		],
 	},	
@@ -20,13 +20,13 @@ var input_senses={
 		sense_type: "v",
 		synonym_list: [ 
 			[
-				{word:"chaos", full:"chaos.n.1", lemma:"chaos"},
-				{word:"disorder", full:"disorder.v.1", lemma:"disorder"},
-				{word:"diffusion", full:"diffusion.v.1", lemma:"diffusion"},
+				{word:"chaos", sense:"chaos.n.1", lemma:"chaos"},
+				{word:"disorder", sense:"disorder.v.1", lemma:"disorder"},
+				{word:"diffusion", sense:"diffusion.v.1", lemma:"diffusion"},
 			],
 			[
-				{word:"wrong sense", full:"wrong_sense.n.1", lemma:"wrond_sense"},
-				{word:"information", full:"information.n.1", lemma:"information"},
+				{word:"wrong sense", sense:"wrong_sense.n.1", lemma:"wrond_sense"},
+				{word:"information", sense:"information.n.1", lemma:"information"},
 			],
 		],
 	},
@@ -39,10 +39,12 @@ var cloud = [
 		sentence_word:"sample word",
 		syn_list:
 			[ 
-				{word:"similar_word", full:"similar_word.n.1", lemma:"lemma", abstraction_level: "concrete"},
+				{word:"similar_word", sense:"similar_word.n.1", lemma:"lemma", abstraction_level: "concrete"},
 			]
 	},
 ];
+
+var score = 0; 
 
 //helper functions
 function addWord(me){
@@ -54,13 +56,15 @@ function addWord(me){
 	}
 	var new_word_text = $("#word_item_template").find("li").find(".word_text");
 	new_word_text.html(word_text);
-	new_word_text.parent().attr("full","");//we don't know the sense and type
+	new_word_text.parent().attr("sense","");//we don't know the sense and type
 	new_word_text.parent().attr("lemma","");//we don't know the sense and type
 	var new_word = $("#word_item_template").html();
 	word_list_end.before(new_word);
 
 	$('div[data-role=collapsible]').collapsible();
 	$(entry_box).val('');
+	score++;
+	$("#score").html(score);
 }
 
 //function to load sentence
@@ -133,7 +137,7 @@ function loadSenses(word_with_senses){
 				var new_word_li = $("#word_item_template").find("li");
 				var new_word_text = new_word_li.find(".word_text");
 				new_word_text.html(synonym.word);
-				new_word_li.attr("full",synonym.full);
+				new_word_li.attr("sense",synonym.sense);
 				new_word_li.attr("lemma",synonym.lemma);
 				var new_word = $(new_word_text).parent().parent().html();
 				$(sense_list).append(new_word);
@@ -151,8 +155,22 @@ function loadSenses(word_with_senses){
 
 		$(".sort").sortable({
 			connectWith: '.word1',
-			dropOnEmpty: true
-			}).disableSelection();
+			dropOnEmpty: true,
+			stop: function( ev, ui) {
+	            if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
+	            	score++;
+	            	$("#score").html(score);
+	            }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
+	            	score--;
+	            	$("#score").html(score);
+	            }
+	        },
+	        beforeStop: function(ev, ui) {
+	            if ($(ui.item).hasClass('number') && $(ui.placeholder).parent()[0] != this) {
+	                $(this).sortable('cancel');
+	            }
+		    },
+		}).disableSelection();
 	}catch(err){
 		//no senses defined
 	}
@@ -160,8 +178,18 @@ function loadSenses(word_with_senses){
 }
 
 function submitCloud(){
+
+	if(score<20){
+		alert("your score is only "+score+"! You can do better than that");
+		return;
+	}else if(confirm("Your score is "+score+". You should aim for a score of at least 40. Are you done with your cloud?")) {
+		//continue
+	} else {
+	    return;
+	}
+
 	//what do we need to do? 
-	//for each word-object in cloud, fill in syn_list[] with each {word, full, lemma}
+	//for each word-object in cloud, fill in syn_list[] with each {word, sense, lemma}
 	var words_array = $("#sentence").find(".word_column");
 
 	for(var j = 0; j<words_array.length; j++){
@@ -176,11 +204,11 @@ function submitCloud(){
 			word_li = word_li_array[i];
 			if(! $(word_li).hasClass("add_button")){
 				word_ = $(word_li).find(".word_text").html();
-				full_ = $(word_li).attr("full");
+				sense_ = $(word_li).attr("sense");
 				lemma_ = $(word_li).attr("lemma"); //add this
 				abstraction_level_ = $(word_li).parent().attr("abstraction");
 
-				var word_to_add = {word:word_, full:full_, lemma:lemma_, abstraction_level:abstraction_level_};
+				var word_to_add = {word:word_, sense:sense_, lemma:lemma_, abstraction_level:abstraction_level_};
 				cloud_column.syn_list.push(word_to_add);	
 			}			
 		}
@@ -211,13 +239,25 @@ window.onload = $(function() {
 
 	$(".sort").sortable({
 		connectWith: '.word1',
-		dropOnEmpty: true
-		}).disableSelection();
+		dropOnEmpty: true,
+		stop: function( ev, ui) { //change score
+	        if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
+	        	score++;
+	        	$("#score").html(score);
+	        }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
+	        	score--;
+	        	$("#score").html(score);
+	        }
+    	},
+    	cancel: ".add_button",
+	}).disableSelection();
 });
 
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
 	$(this).parent().remove();
+	score--;
+	$("#score").html(score);
 });
 $('body').on('click', '.new-word', function(){
 	addWord(this);
