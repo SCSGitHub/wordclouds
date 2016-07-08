@@ -213,14 +213,14 @@ function submitCloud(){
 	}
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
-	
-	//$.post(url, output, function(){
+	var url = '../submit';
+	$.post(url, output, function(){
 		alert("Your response has been recorded. Your completion code is "+completion_code);
 		//give code for payment
-	//})
-	//	.fail(function(){
-	//		alert("failed");
-	//});
+	})
+		.fail(function(){
+			alert("failed");
+	});
 
 }
 
@@ -392,5 +392,3 @@ $('body').on('keyup', '.add-word-input', function (e) {
 // 	    }
 // 	}
 // });
-
-
