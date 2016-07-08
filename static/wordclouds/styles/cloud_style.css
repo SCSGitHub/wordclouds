@@ -1,5 +1,12 @@
 ul{
-	min-height: 30px;
+	min-height: 3em;
+}
+
+h1{
+	margin: .2em;
+}
+h2{
+	font-weight:200;
 }
 
 .quarter{
@@ -18,12 +25,29 @@ a.ui-btn{
 	border-width: 0;
 }
 
-#instructions{
-	padding: 10px;
+#foot{
+	padding: 1em;
+}
+
+#top-bar{
+	padding: .2em;
     background-color: #08b;
     text-shadow: 0 0 0;
     font-weight: 200;
     color: #EEE;
+}
+#instructions{
+	padding: 1em;
+    background-color: inherit;
+    text-shadow: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+#instructions > div {
+	background-color:inherit;
+	color: inherit;
+	border: none;
+	text-shadow: none;
 }
 #title{
 	color: #084a80;
@@ -46,22 +70,30 @@ a.ui-btn{
     text-shadow: 0px 0px 0px;
     font-weight: 200;
 }
-h2{
-	font-weight:200;
-}
+/*#word_bin{
+	background-color: #eeeeee;
+	color:#333;
+	width:65%;
+	margin: 2em;
+	position: fixed;
+	right: 0em;
+	bottom:0em;
+}*/
 
 #left-menu{
 	background-color: #f6f6f6;
-	width: 25%;
+	border: solid #aaa .3em;
+	width: 15em;
 	color: #333;
 }
-
-#left-menu > .ui-collapsible-content {
-
+#left-menu > div {
+	max-height: 35em;
+	overflow: auto;
 }
+
 #submit, #next{
 	background-color: rgba(20,200,20,.4);
-	padding: 5px;
+	padding: .5em;
 	margin:auto;
 	display:block;
 }
@@ -79,9 +111,15 @@ h2{
 }*/
 
 .word_column_div.ui-collapsible-inset{
-	width: 22%;
+	width: 18em;
 	background: rgb(46, 119, 146);
 	color: #333;
+	
+/*	position: fixed;
+    bottom: 1em;
+    right: 1em;
+    width: 70%;
+    background-color:#ffffff;*/
 }
 
 /*.word_column_div.ui-collapsible-inset > h4 > a{
@@ -107,12 +145,17 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 }
 
 .word_column_div.ui-collapsible-collapsed{
-	width:12%;
+	width: 10em;
 	background: #eee;
 }
 
 .collapsible3{
 	background-color: #f6f6f6;
+}
+
+.collapsible3 > div > ul {
+	max-height: 20em;
+	overflow: auto;
 }
 
 .ui-btn-minus{
@@ -122,9 +165,9 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 #score_box{
 	background-color: #333;
 	color: #eee;
-	border-radius: 4px;
+	border-radius: .2em;
 	float: right;
-	padding: 10px;
+	padding: 1em;
 	width: 10%;
 
     position: fixed;
@@ -149,4 +192,23 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 	box-shadow:none !important;
 }
 
+.clear:after{
+    clear: both;
+    content: "";
+    display: table;
 
+}
+
+.active_word{
+/*	position: fixed;
+    bottom: 1em;
+    right: 1em;
+    width: 70%;
+    background-color:#ffffff;*/
+}
+
+/*.collapsible3.ui-collapsible.ui-collapsible-inset.ui-corner-all.ui-collapsible-themed-content {
+    float: left;
+    margin: 1em;
+    width: 40%;
+}*/

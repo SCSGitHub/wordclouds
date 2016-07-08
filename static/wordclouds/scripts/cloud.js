@@ -76,6 +76,7 @@ function addWord(me){
 	word_list_end.before(new_word);
 
 	$('div[data-role=collapsible]').collapsible();
+
 	$(entry_box).val('');
 	score++;
 	$("#score").html(score);
@@ -111,7 +112,8 @@ function loadSentence(){
 		$("#sentence").append(prepared_column);
 		$('div[id=word_sentence_'+i+']').collapsible({
 
-			expand: function(event){
+			expand: function(event, ui){
+				$(event.target).addClass("active_word");
 				var word = $(event.target).parent().attr("word");
 				var wordNumber = sentence.findIndex(function(val){return (val==word)});
 				loadSenses(wordNumber);
@@ -127,6 +129,9 @@ function loadSentence(){
 						}
 					}
 				}
+			},
+			collapse: function(event, ui){
+				$(event.target).removeClass("active_word");
 			},
 		});
 		$('.collapsible3').collapsible({
@@ -179,6 +184,9 @@ function loadSenses(word_number){
 		$(".sort").sortable({
 			connectWith: '.word1',
 			dropOnEmpty: true,
+			start: function(ev, ui) {
+				$(ui.item).addClass("im_being_dragged");
+			},
 			stop: function( ev, ui) {
 	            if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
 	            	score++;
@@ -188,7 +196,8 @@ function loadSenses(word_number){
 	            	$("#score").html(score);
 	            }
 	        },
-	        beforeStop: function(ev, ui) { 
+	        beforeStop: function(ev, ui) {
+	        	$(ui.item).removeClass("im_being_dragged");
 	            if ($(ui.item).hasClass('number') && $(ui.placeholder).parent()[0] != this) {
 	                $(this).sortable('cancel');
 	            }
@@ -323,6 +332,9 @@ $(document).ready(function() {
 	$(".sort").sortable({
 		connectWith: '.word1',
 		dropOnEmpty: true,
+		start: function(ev, ui) {
+				$(ui.item).addClass("im_being_dragged");
+		},
 		stop: function( ev, ui) { //change score
 	        if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
 	        	score++;
@@ -332,16 +344,37 @@ $(document).ready(function() {
 	        	$("#score").html(score);
 	        }
     	},
+    	beforeStop: function(ev, ui) {
+	        	$(ui.item).removeClass("im_being_dragged");
+		},
     	cancel: ".add_button",
 	}).disableSelection();
 
+	$('#instructions').collapsible({
+		collapse: function(ev, ui){
+	        var $btn_text  = $(ev.target).find('.ui-btn');
+	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+	        $btn_text.text('Instructions (Click to expand)').append($btn_child);
+		},
+		expand: function(ev, ui){
+	        var $btn_text  = $(ev.target).find('.ui-btn');
+	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+	        $btn_text.text('Instructions (Click to collapse)').append($btn_child);
+		},
+
+	});
+
 });
+
+
 
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
+	if(! ($(this).parents().eq(3).hasClass("sense_div"))){
+		score--;
+		$("#score").html(score);
+	}
 	$(this).parent().remove();
-	score--;
-	$("#score").html(score);
 });
 $('body').on('click', '.new-word', function(){
 	addWord(this);
@@ -352,4 +385,51 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		addWord(enter_button);
 	}
 });	
+
+// $(document).on("scroll", function(e) {
+// 	var hidden_on_top = $(window).scrollTop();
+// 	var $el = $('.active_word'); //active word 
+// 	if($el.length==0){
+// 		//alert("no item found");
+// 		return;
+// 	}
+// 	var bottom = $el.offset().top + $el.outerHeight(true);
+
+// 	var near_bottom, scrolled_past_bin;
+// 	if( $(document).height() - $(window).scrollTop() - $(window).height() < $("#foot").height()){
+// 		near_bottom=true;
+// 	}
+// 	if(hidden_on_top>bottom ){
+// 		scrolled_past_bin=true;
+// 	}
+// 	if(scrolled_past_bin && !near_bottom){
+// 		$('#word_bin').show();
+// 	}else{
+// 		$('#word_bin').hide();
+// 	}
+// });
+
+// $(window).mousemove(function (e) {
+//     var x = $(window).innerHeight() - 50,
+//         y = $(window).scrollTop() + 50;
+//     if ($('.im_being_dragged').length>0){
+// 	    if ($('.im_being_dragged').offset().top > x) {
+// 	        //Down
+// 	        $('html, body').animate({
+// 	            scrollTop: 300 // adjust number of px to scroll down
+// 	        }, 600);
+// 	    }
+// 	    if ($('.im_being_dragged').offset().top < y) {
+// 	        //Up
+// 	        $('html, body').animate({
+// 	            scrollTop: 0
+// 	        }, 600);
+// 	    } else {
+// 	        $('html, body').animate({
+
+// 	        });
+// 	    }
+// 	}
+// });
+
 
