@@ -154,7 +154,7 @@ function loadSentence(){
 		var sentence_word = { sentence_word: word_of_sentence, syn_list: []};
 		cloud.push(sentence_word);
 	}
-	
+
 	//add words:
 	var ul = $("#word_sentence_0").find(".concrete");
 	addWordManual(ul, "Golden Retriever");
@@ -221,17 +221,16 @@ function loadSenses(word_with_senses){
 			connectWith: '.word1',
 			dropOnEmpty: true,
 			beforeStop: function(ev, ui) {
-	            // if ($(ui.item).hasClass('number') && $(ui.placeholder).parent()[0] != this) {
-	            //     $(this).sortable('cancel');
-	            // }
 	            var lemma=ui.item.attr("lemma");
 	            var group = ui.item.parent().attr("abstraction");
 	            var word_object = $.grep(input_senses["cook"].synonym_list[0], function(e){ return e.lemma == lemma; });
-	            var correct_group = word_object[0].correct_abstraction;
-	            if(group != correct_group){
-	            	$(this).sortable('cancel');
-	            	alert("that's not the correct abstraction level. Try again");
-	            }
+	            if(word_object.length>0){
+		            var correct_group = word_object[0].correct_abstraction;
+		            if(group != correct_group){
+		            	$(this).sortable('cancel');
+		            	alert("that's not the correct abstraction level. Try again");
+		            }
+	        	}
 	        },
 		}).disableSelection();
 	}catch(err){
@@ -273,7 +272,8 @@ function loadSenses(word_with_senses){
 
 function next(){
 	if($("#sense_0").find("li").length==0){
-		alert("you may continue");
+		//alert("you may continue");
+		window.location.replace("http://localhost:8000/wordclouds/cloud/");
 	}else{
 		alert("Uh oh, you aren't done yet! Drag the synonyms from the word bank into the apropriate bin under 'cook'.")
 	}

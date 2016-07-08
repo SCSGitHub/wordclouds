@@ -1,8 +1,10 @@
-//input data structures
+//global data structures
+//input information
 var input_sentence = { sentence_id: 0, words:[]};
-var input_senses;//=[
+var input_senses;
+//[
 // 	{ word:"can",
-	//senses:[
+//		senses:[
 // 		{
 // 			sense_number: 0,
 // 			pos: "n",
@@ -12,53 +14,24 @@ var input_senses;//=[
 // 					{word:"camp", sense:"camp.v.1", lemma:"camp"},
 // 				],
 // 		},
-// 		{
-// 			sense_number: 1,
-// 			pos: "n",
-// 			synonym_list:
-// 				[
-// 					{word:"be", sense:"be.v.1", lemma:"be"},
-// 					{word:"stand", sense:"stand.v.1", lemma:"stand"},
-// 				],
-// 		},
-// 	]},	{ word:"entropy",
-// 		  senses:[ //array of senses
-// 		{
-// 			sense_number: 0,
-// 			pos: "n",
-// 			synonym_list: 
-// 				[
-// 					{word:"chaos", sense:"chaos.n.1", lemma:"chaos"},
-// 					{word:"disorder", sense:"disorder.n.1", lemma:"disorder"},
-// 					{word:"diffusion", sense:"diffusion.n.1", lemma:"diffusion"},
-// 				]
-// 		},
-// 		{
-// 			sense_number: 1,
-// 			pos: "n",
-// 			synonym_list:
-// 				[
-// 					{word:"wrong sense", sense:"wrong_sense.n.1", lemma:"wrond_sense"},
-// 					{word:"information", sense:"information.n.1", lemma:"information"},
-// 				],
-// 		},
 // 	]},
 // ];
-
 var sentence = []; 
 //output data structure:
-var cloud = [ 
-	// {
+var cloud = [];
+	//[ {
 	// 	sentence_word:"sample word",
 	// 	syn_list:
 	// 		[ 
 	// 			{word:"similar_word", sense:"similar_word.n.1", lemma:"lemma", abstraction_level: "concrete"},
 	// 		]
-	// },
-];
+	// },]
 
+//global variables
 var problem_id = 1; //get as an input
 var score = 0; 
+var min_score = 1;
+var completion_code = getRandomInt(0,10000000);
 
 //helper functions
 function addWord(me){
@@ -182,11 +155,9 @@ function loadSenses(word_number){
 		}
 
 		$(".sort").sortable({
+			cancel: ".add_button",
 			connectWith: '.word1',
 			dropOnEmpty: true,
-			start: function(ev, ui) {
-				$(ui.item).addClass("im_being_dragged");
-			},
 			stop: function( ev, ui) {
 	            if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
 	            	score++;
@@ -196,22 +167,16 @@ function loadSenses(word_number){
 	            	$("#score").html(score);
 	            }
 	        },
-	        beforeStop: function(ev, ui) {
-	        	$(ui.item).removeClass("im_being_dragged");
-	            if ($(ui.item).hasClass('number') && $(ui.placeholder).parent()[0] != this) {
-	                $(this).sortable('cancel');
-	            }
-		    },
 		}).disableSelection();
 	}catch(err){
-		//no senses defined
+		//no senses defined. its ok
 	}
 }
 
 function submitCloud(){
 
-	if(score<1){
-		alert("your score is only "+score+"! You can do better than that");
+	if(score<min_score){
+		alert("your score is only "+score+"! You need to enter at least "+min_score+" words.");
 		return;
 	}else if(confirm("Your score is "+score+". You should aim for a score of at least 40. Are you done with your cloud?")) {
 		//continue
@@ -249,13 +214,13 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	
-	$.post(url, output, function(){
-		alert("Your response has been recorded");
+	//$.post(url, output, function(){
+		alert("Your response has been recorded. Your completion code is "+completion_code);
 		//give code for payment
-	})
-		.fail(function(){
-			alert("failed");
-	});
+	//})
+	//	.fail(function(){
+	//		alert("failed");
+	//});
 
 }
 
@@ -289,7 +254,7 @@ function getSensesFromInput(data){
 			input_senses[i].senses.push(new_sense);
 		}
 	}
-	return input_senses;//{sentence_id: 0, words: ["can", "entropy", "be", "reversed?"]};
+	return input_senses;
 }
 
 function getSentenceFromInput(data){
@@ -299,7 +264,7 @@ function getSentenceFromInput(data){
 		word = words[i];
 		input_sentence.words.push(word.surface_form);
 	}
-	sentence = input_sentence.words;
+	sentence = input_sentence.words; //store just the word-strings in an array for easy access
 	return input_sentence;
 }
 
@@ -308,7 +273,8 @@ function getSynonyms(problem_no){
 	// $.get(url, function(data){
 	// 	input_sentence = getSentenceFromInput(data);
 	// 	input_senses = getSensesFromInput(data);
-	// });
+	// }); 
+	//using ajax synchronous because it needs to load before dom elements (maybe there's a better way)
 	$.ajax({
 	     async: false,
 	     type: 'GET',
@@ -320,21 +286,21 @@ function getSynonyms(problem_no){
 	});
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 $(document).ready(function() {
 	cloud = [];
-	problem_id=1;//**
 	getSynonyms(problem_id);//get input data from api
 
-
-	loadSenses(0);
+	loadSenses(0); //display suggestions for the first word
 	loadSentence();
 
 	$(".sort").sortable({
+		cancel: ".add_button",
 		connectWith: '.word1',
 		dropOnEmpty: true,
-		start: function(ev, ui) {
-				$(ui.item).addClass("im_being_dragged");
-		},
 		stop: function( ev, ui) { //change score
 	        if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
 	        	score++;
@@ -344,28 +310,23 @@ $(document).ready(function() {
 	        	$("#score").html(score);
 	        }
     	},
-    	beforeStop: function(ev, ui) {
-	        	$(ui.item).removeClass("im_being_dragged");
-		},
-    	cancel: ".add_button",
 	}).disableSelection();
 
 	$('#instructions').collapsible({
 		collapse: function(ev, ui){
 	        var $btn_text  = $(ev.target).find('.ui-btn');
-	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
 	        $btn_text.text('Instructions (Click to expand)').append($btn_child);
 		},
 		expand: function(ev, ui){
 	        var $btn_text  = $(ev.target).find('.ui-btn');
-	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
-	        $btn_text.text('Instructions (Click to collapse)').append($btn_child);
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+        	$btn_text.text('Instructions (Click to collapse)').append($btn_child);
 		},
 
 	});
 
 });
-
 
 
 //event handlers
