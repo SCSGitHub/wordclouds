@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^cloud_training/$', views.cloud_training, name='cloud_training'),
     url(r'^problem/(?P<problem_id>\d+)?$', views.fetch_problem, name='problem'),
     url(r'^search/$', views.search, name='search'),
+    url(r'^submit/?$', views.submit, name='submit'),
     url(r'^synonyms/(?P<word>[\w\d._-]+)?$', views.fetch_synonyms, name='synonyms'),
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
     url(r'^word_senses/(?P<word>[\w\d._-]+)?$', views.fetch_word_senses, name='word_senses'),

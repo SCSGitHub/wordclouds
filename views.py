@@ -1,10 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from .problems import *
 from .synonyms import *
 from .words import *
+import logging
+
+logger = logging.getLogger(__name__)
+logger.debug('Starting \'wordclouds\' app...')
 
 class JSONResponse(HttpResponse):
     """
@@ -73,5 +78,18 @@ def fetch_word_senses(request, word=''):
     if word:
         word_obj = WordSense(word)
         return JSONResponse(WordSenseSerializer(word_obj).data)
+    else:
+        return HttpResponse(status=400)
+
+"""
+Validate and store POST data
+"""
+#remove this decorator when functionality is complete
+@csrf_exempt
+def submit(request):
+    if request.method == 'POST':
+        logger.debug("Retrieved POST data...")
+        logger.debug(request.POST)
+        return HttpResponse('All good.', status=200)
     else:
         return HttpResponse(status=400)
