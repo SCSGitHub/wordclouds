@@ -7,7 +7,15 @@ var input_senses={
 		synonym_list: [ 
 			[
 				{word:"animal", sense:"animal.n.1", lemma:"animal"},
+				{word:"pet", sense:"pet.n.1", lemma:"pet"},
+				{word:"vertibrate", sense:"vertibrate.n.1", lemma:"vertibrate"},
+				{word:"companion", sense:"companion.n.1", lemma:"companion"},
+				{word:"friend", sense:"friend.n.1", lemma:"friend"},
+				{word:"living thing", sense:"living_thing.n.1", lemma:"living_thing"},
+				{word:"creature", sense:"creature.n.1", lemma:"creature"},
 				{word:"Golden Retriever", sense:"Golden_Retriever.v.1", lemma:"Golden_Retriever"},
+				{word:"mutt", sense:"mutt.v.1", lemma:"mutt"},
+				{word:"canine", sense:"canine.v.1", lemma:"canine"},
 			],
 		],
 	},	
@@ -20,6 +28,12 @@ var input_senses={
 				{word:"jog", sense:"jog.n.1", lemma:"jog"},
 				{word:"sprint", sense:"sprint.v.1", lemma:"sprint"},
 				{word:"move", sense:"move.v.1", lemma:"move"},
+				{word:"speed-walk", sense:"speed-walk.v.1", lemma:"speed-walk"},
+				{word:"trot", sense:"trot.v.1", lemma:"trot"},
+				{word:"travel", sense:"travel.v.1", lemma:"travel"},
+				{word:"exercise", sense:"exercise.v.1", lemma:"exercise"},
+				{word:"transport", sense:"transport.v.1", lemma:"transport"},
+				{word:"work out", sense:"work_out.v.1", lemma:"work_out"},
 			],
 		],
 	},
@@ -140,19 +154,33 @@ function loadSentence(){
 		var sentence_word = { sentence_word: word_of_sentence, syn_list: []};
 		cloud.push(sentence_word);
 	}
-
-
+	
 	//add words:
 	var ul = $("#word_sentence_0").find(".concrete");
 	addWordManual(ul, "Golden Retriever");
+	addWordManual(ul, "Canine");
+	addWordManual(ul, "mutt");
 	ul = $("#word_sentence_0").find(".abstract");
 	addWordManual(ul, "animal");
+	addWordManual(ul, "creature");
+	addWordManual(ul, "living thing");
+	addWordManual(ul, "friend");
+	addWordManual(ul, "companion");
+	addWordManual(ul, "vertibrate");
+	addWordManual(ul, "pet");
+
 	ul = $("#word_sentence_1").find(".concrete");
 	addWordManual(ul, "jog");
 	addWordManual(ul, "spring");
+	addWordManual(ul, "trot");
+	addWordManual(ul, "speed-walk");
 	ul = $("#word_sentence_1").find(".abstract");
 	addWordManual(ul, "move");
 	addWordManual(ul, "go");
+	addWordManual(ul, "travel");
+	addWordManual(ul, "transport");
+	addWordManual(ul, "exercise");
+	addWordManual(ul, "work out");
 }
 
 //function to load word sense (suggestion list):
@@ -247,7 +275,7 @@ function next(){
 	if($("#sense_0").find("li").length==0){
 		alert("you may continue");
 	}else{
-		console.log("not done");
+		alert("Uh oh, you aren't done yet! Drag the synonyms from the word bank into the apropriate bin under 'cook'.")
 	}
 }
 
