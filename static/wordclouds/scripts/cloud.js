@@ -31,6 +31,7 @@ var cloud = [];
 var problem_id = 1; //get as an input
 var score = 0; 
 var min_score = 1;
+var completion_code = getRandomInt(0,10000000);
 
 //helper functions
 function addWord(me){
@@ -213,13 +214,13 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	
-	$.post(url, output, function(){
-		alert("Your response has been recorded");
+	//$.post(url, output, function(){
+		alert("Your response has been recorded. Your completion code is "+completion_code);
 		//give code for payment
-	})
-		.fail(function(){
-			alert("failed");
-	});
+	//})
+	//	.fail(function(){
+	//		alert("failed");
+	//});
 
 }
 
@@ -285,6 +286,10 @@ function getSynonyms(problem_no){
 	});
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 $(document).ready(function() {
 	cloud = [];
 	getSynonyms(problem_id);//get input data from api
@@ -310,19 +315,18 @@ $(document).ready(function() {
 	$('#instructions').collapsible({
 		collapse: function(ev, ui){
 	        var $btn_text  = $(ev.target).find('.ui-btn');
-	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
 	        $btn_text.text('Instructions (Click to expand)').append($btn_child);
 		},
 		expand: function(ev, ui){
 	        var $btn_text  = $(ev.target).find('.ui-btn');
-	            $btn_child = $btn_text.find('.ui-collapsible-heading-status');
-	        $btn_text.text('Instructions (Click to collapse)').append($btn_child);
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+        	$btn_text.text('Instructions (Click to collapse)').append($btn_child);
 		},
 
 	});
 
 });
-
 
 
 //event handlers
