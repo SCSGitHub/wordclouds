@@ -49,9 +49,12 @@ a.ui-btn{
 	border: none;
 	text-shadow: none;
 }
-#title{
-	color: #084a80;
-	float:left;
+#title {
+    color: #eeeeee;
+    float: left;
+    font-weight: 200;
+    font-size: 45px;
+    padding-left: 20px;
 }
 
 .word-column{
@@ -82,7 +85,7 @@ a.ui-btn{
 
 #left-menu{
 	background-color: #f6f6f6;
-	border: solid #aaa .3em;
+	/*border: solid rgb(46, 119, 146) .5em;*/
 	width: 15em;
 	color: #333;
 }
