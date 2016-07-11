@@ -215,7 +215,7 @@ function submitCloud(){
 	var output = {problem_id: problem_id, cloud: cloud};
 	var url = '../submit';
 	$.post(url, output, function(data){
-		//completion_code = data.code;
+		completion_code = data;
 		alert("Your response has been recorded. Your completion code is "+completion_code);
 		//give code for payment
 	})
