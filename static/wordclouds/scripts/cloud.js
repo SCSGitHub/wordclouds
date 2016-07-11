@@ -31,7 +31,7 @@ var cloud = [];
 var problem_id = 2; //get as an input
 var score = 0; 
 var min_score = 1;
-var completion_code = getRandomInt(0,10000000);
+var completion_code = 0;
 
 //helper functions
 function addWord(me){
@@ -172,7 +172,6 @@ function loadSenses(word_number){
 		//no senses defined. its ok
 	}
 }
-
 function submitCloud(){
 
 	if(score<min_score){
@@ -183,12 +182,8 @@ function submitCloud(){
 	} else {
 	    return;
 	}
-
-	//what do we need to do? 
 	//for each word-object in cloud, fill in syn_list[] with each {word, sense, lemma}
 	var words_array = $("#sentence").find(".word_column");
-
-
 	for(var j = 0; j<words_array.length; j++){
 		var cloud_column = {sentence_word: "", syn_list:[]};
 		var column_li = words_array[j];
@@ -271,10 +266,6 @@ function getSentenceFromInput(data){
 
 function getSynonyms(problem_no){
 	var url = 'http://scsweb-d11.andrew.cmu.edu:81/wordclouds/problem/'+problem_no;
-	// $.get(url, function(data){
-	// 	input_sentence = getSentenceFromInput(data);
-	// 	input_senses = getSensesFromInput(data);
-	// }); 
 	//using ajax synchronous because it needs to load before dom elements (maybe there's a better way)
 	$.ajax({
 	     async: false,
@@ -329,7 +320,6 @@ $(document).ready(function() {
 
 });
 
-
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
 	if(! ($(this).parents().eq(3).hasClass("sense_div"))){
@@ -347,49 +337,3 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		addWord(enter_button);
 	}
 });	
-
-// $(document).on("scroll", function(e) {
-// 	var hidden_on_top = $(window).scrollTop();
-// 	var $el = $('.active_word'); //active word 
-// 	if($el.length==0){
-// 		//alert("no item found");
-// 		return;
-// 	}
-// 	var bottom = $el.offset().top + $el.outerHeight(true);
-
-// 	var near_bottom, scrolled_past_bin;
-// 	if( $(document).height() - $(window).scrollTop() - $(window).height() < $("#foot").height()){
-// 		near_bottom=true;
-// 	}
-// 	if(hidden_on_top>bottom ){
-// 		scrolled_past_bin=true;
-// 	}
-// 	if(scrolled_past_bin && !near_bottom){
-// 		$('#word_bin').show();
-// 	}else{
-// 		$('#word_bin').hide();
-// 	}
-// });
-
-// $(window).mousemove(function (e) {
-//     var x = $(window).innerHeight() - 50,
-//         y = $(window).scrollTop() + 50;
-//     if ($('.im_being_dragged').length>0){
-// 	    if ($('.im_being_dragged').offset().top > x) {
-// 	        //Down
-// 	        $('html, body').animate({
-// 	            scrollTop: 300 // adjust number of px to scroll down
-// 	        }, 600);
-// 	    }
-// 	    if ($('.im_being_dragged').offset().top < y) {
-// 	        //Up
-// 	        $('html, body').animate({
-// 	            scrollTop: 0
-// 	        }, 600);
-// 	    } else {
-// 	        $('html, body').animate({
-
-// 	        });
-// 	    }
-// 	}
-// });
