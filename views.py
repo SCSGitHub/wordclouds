@@ -6,10 +6,11 @@ from rest_framework.renderers import JSONRenderer
 from .problems import *
 from .synonyms import *
 from .words import *
-import logging
+import hashlib, logging
 
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
+hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
 
 class JSONResponse(HttpResponse):
     """
@@ -43,7 +44,11 @@ def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
 
 def fetch_problem(request, problem_id):
-    problem_id = int(problem_id)
+    try:
+        problem_id = int(problem_id)
+    except:
+        return HttpResponse(status=400)
+        
     if request.method == 'GET' and problem_id > 0:
         #create problem object
         problem = Problem(problem_id)
@@ -88,8 +93,15 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
+        #Format for hash string
+        #user id + hash key + trial num
+        hash_string = "TEMP" + hash_key + str(1)
+        md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
         logger.debug("Retrieved POST data...")
         logger.debug(request.POST)
-        return HttpResponse('All good.', status=200)
+        logger.debug("Hash created.")
+        logger.debug(md5_hash)
+        #return HttpResponse('All good.', status=200)
+        return JSONResponse(md5_hash, status=200)
     else:
         return HttpResponse(status=400)
