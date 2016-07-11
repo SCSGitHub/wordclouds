@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Cloud App Login</title>
+
+	{% load staticfiles %}
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
+
+</head>
+<body>
+	<div id="instructions" width="30%">
+		Welcome to the word cloud interface.
+		<br>
+		Please enter your Mechanical Turk username:
+		<form method="POST" action="../cloud_training" onsubmit="return go()">
+			<input type="text" id="username" placeholder="username">
+			<input type="submit" id="submit" value="Next">
+		</form>
+	</div>
+
+	<script src="{% static 'wordclouds/scripts/username.js' %}"></script>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
@@ -39,8 +40,12 @@ def search(request):
 def cloud(request):
     return render(request, 'wordclouds/cloud.html')
 
+@csrf_exempt
 def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
+
+def username(request):
+    return render(request, 'wordclouds/username.html')
 
 def fetch_problem(request, problem_id):
     problem_id = int(problem_id)
@@ -91,5 +96,15 @@ def submit(request):
         logger.debug("Retrieved POST data...")
         logger.debug(request.POST)
         return HttpResponse('All good.', status=200)
+    else:
+        return HttpResponse(status=400)
+
+@csrf_exempt
+def send_username(request):
+    if request.method == 'POST':
+        logger.debug("Retrieved POST data...")
+        user = list(request.POST.keys())[0] #this is the mechanical turk username
+        logger.debug(user)
+        return HttpResponseRedirect("../cloud_training")
     else:
         return HttpResponse(status=400)

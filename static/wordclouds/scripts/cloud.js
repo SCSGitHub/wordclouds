@@ -28,7 +28,7 @@ var cloud = [];
 	// },]
 
 //global variables
-var problem_id = 1; //get as an input
+var problem_id = 2; //get as an input
 var score = 0; 
 var min_score = 1;
 var completion_code = getRandomInt(0,10000000);
@@ -144,7 +144,7 @@ function loadSenses(word_number){
 				$(sense_list).append(new_word);
 			}
 			$(sense_div).attr("id", "sense_"+j+"");
-			$(sense_div).find("h4").html("Sense "+(j+1)+"");
+			$(sense_div).find("h4").html((j+1)+": " +sense.synonym_list[0].word);
 			//now add the sense to the list
 			var new_sense = $("#word_sense_template").html();
 			var target = $("#left-menu").find(".ui-collapsible-content");
@@ -214,7 +214,8 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	var url = '../submit';
-	$.post(url, output, function(){
+	$.post(url, output, function(data){
+		//completion_code = data.code;
 		alert("Your response has been recorded. Your completion code is "+completion_code);
 		//give code for payment
 	})
