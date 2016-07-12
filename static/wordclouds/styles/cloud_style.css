@@ -3,7 +3,7 @@ ul{
 }
 
 h1{
-	margin: .2em;
+	margin: 1%;
 }
 h2{
 	font-weight:200;
@@ -57,13 +57,25 @@ a.ui-btn{
 	color: inherit;
 	border: none;
 	text-shadow: none;
+	/*height:80vh;*/
 }
 #title {
     color: #eeeeee;
     float: left;
     font-weight: 200;
     font-size: 45px;
-    padding-left: 20px;
+    padding-left: 5%;
+}
+
+#input_centered{
+	color: #eeeeee;
+	font-size: 18px;
+	width: 70%;
+	height:40%;
+	margin:auto;
+	display:block;
+	position: relative;
+  	top: 30%;
 }
 
 .word-column{
@@ -99,7 +111,7 @@ a.ui-btn{
 #left-menu{
 	background-color: #f6f6f6;
 	/*border: solid rgb(46, 119, 146) .5em;*/
-	width: 15em;
+	width: 20%;
 	color: #333;
 }
 #left-menu > div {
@@ -127,7 +139,7 @@ a.ui-btn{
 }*/
 
 .word_column_div.ui-collapsible-inset{
-	width: 18em;
+	width: 23%;
 	background: rgb(46, 119, 146);
 	color: #333;
 	
@@ -161,7 +173,7 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 }
 
 .word_column_div.ui-collapsible-collapsed{
-	width: 10em;
+	width: 13%;
 	/*background: #eee;*/
 }
 
@@ -229,13 +241,13 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 
 .button{
 	padding: 6px 12px;
-	margin: 8px;
+	margin: 2em;
     font-size: 14px;
     line-height: 1.42857143;
     color: #555;
     /*background-color: #fff;*/
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
 .active_word{

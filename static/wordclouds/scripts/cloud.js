@@ -17,6 +17,7 @@ var input_senses;
 // 	]},
 // ];
 var sentence = []; 
+var word_scores = {};
 var full_sentence = "";
 //output data structure:
 var cloud = [];
@@ -29,7 +30,7 @@ var cloud = [];
 	// },]
 
 //global variables
-var problem_id = 3; //get as an input
+var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
 var min_score = 1;
 var completion_code = 0;
@@ -52,13 +53,21 @@ function addWord(me){
 	$('div[data-role=collapsible]').collapsible();
 
 	//update word and net score
-	var word_score = $(me).parents().eq(3).find("li").length - 1;
-	var word = $(me).parents().eq(6).attr("word");
-	var title = $(me).parents().eq(5).find("h4 a").eq(0);
-	title.text("("+word_score+") "+word);
-	console.log("Words: "+word_score);
+	var word_div = $(me).parents().eq(5);
+	updateWordScore(word_div, 1);
+
 	$(entry_box).val('');
-	score++;
+}
+
+function updateWordScore(word_div, change){
+	var word = $(word_div).parent().attr("word");
+	var word_score = word_scores[word] + change;
+	word_scores[word]= word_score;
+	var title = $(word_div).find("h4 a").eq(0);
+	title.text("("+word_score+") "+word);
+	//console.log("Words: "+word_score);
+	//update total score
+	score = score + change;
 	$("#score").html(score);
 }
 
@@ -69,6 +78,7 @@ function loadSentence(){
 
 	for (var i = 0; i<sentence.length; i++){
 		var word_of_sentence = sentence[i];
+		word_scores[word_of_sentence]=0;
 
 		var li = $("#word_sentence_template").find("li");
 		$(li).attr("word",word_of_sentence);
@@ -140,10 +150,16 @@ function loadSenses(word_number){
 
 	try{
 		var senses = input_senses[word_number].senses;
+
+		if(senses.length<1){
+			$(target).html("No suggestions available")
+			return;
+		}
 	  	for(var j=0; j<senses.length; j++){
 			var sense = senses[j];
 			var sense_div = $("#word_sense_template").find("div");
 			var sense_list = sense_div.find("ul");
+
 			for (var i=0; i<sense.synonym_list.length; i++){
 				synonym = sense.synonym_list[i];
 				var new_word_li = $("#word_item_template").find("li");
@@ -171,14 +187,12 @@ function loadSenses(word_number){
 			dropOnEmpty: true,
 			stop: function( ev, ui) {
 	            if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
-	            	score++;
-	            	$("#score").html(score);
+	            	updateWordScore($(ui.item).parents().eq(4), 1);
 	            }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
-	            	score--;
-	            	$("#score").html(score);
+	            	updateWordScore($(ev.target).parents().eq(3), -1);
 	            }
 	        },
-		}).disableSelection();
+		});//.disableSelection();
 	}catch(err){
 		//no senses defined. its ok
 	}
@@ -306,14 +320,12 @@ $(document).ready(function() {
 		dropOnEmpty: true,
 		stop: function( ev, ui) { //change score
 	        if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
-	        	score++;
-	        	$("#score").html(score);
+	        	updateWordScore($(ui.item).parents().eq(4), 1);
 	        }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
-	        	score--;
-	        	$("#score").html(score);
+	        	updateWordScore($(ev.target).parents().eq(3), -1);
 	        }
     	},
-	}).disableSelection();
+	});//.disableSelection();
 
 	$('#instructions').collapsible({
 		collapse: function(ev, ui){
@@ -340,8 +352,7 @@ function isStopWord(word) {
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
 	if(! ($(this).parents().eq(3).hasClass("sense_div"))){
-		score--;
-		$("#score").html(score);
+		updateWordScore($(this).parents().eq(5),-1);
 	}
 	$(this).parent().remove();
 });

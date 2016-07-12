@@ -9,6 +9,8 @@ from .synonyms import *
 from .words import *
 import hashlib, logging
 
+from random import randint
+
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
 hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
@@ -120,11 +122,8 @@ def send_username(request):
         logger.debug("Retrieved User name from POST data:")
         user = request.POST.get("username","") #this is the mechanical turk username from input form
         logger.debug(user)
-        #logger.debug("session:")
-        #logger.debug(request.session)
         request.session["username"]=user
-        #return render(request, 'wordclouds/cloud_training.html')
-        #return HttpResponse('ok', status=200)
+        request.session["problem_id"]=randint(1,4)
         #HttpResponseRedirect("../cloud_training")
         return redirect("/wordclouds/cloud_training")
     else:

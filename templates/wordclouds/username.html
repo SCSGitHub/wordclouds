@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="height:100%">
 <head>
 	<meta charset="utf-8">
 	<title>Cloud App Login</title>
@@ -14,15 +14,17 @@
 	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
 
 </head>
-<body>
-	<div id="instructions" width="30%">
-		Welcome to the word cloud interface.
-		<br>
-		Please enter your Mechanical Turk username:
-		<form method="POST" action="../send_username" onsubmit="return go()">
-			<input type="text" name = "username" id="username" placeholder="username" class="text_input clear">
-			<input type="submit" id="submit" value="Next" class="button" style="margin:8px">
-		</form>
+<body style="background-color:rgb(0, 136, 187); height:100%; width:100%">
+	<div id="input_centered" class="center">
+		<div id="instructions" width="100%">
+			Welcome to the word cloud interface.
+			<br>
+			Please enter your Mechanical Turk username:
+			<form method="POST" action="../send_username" onsubmit="return go()">
+				<input type="text" name = "username" id="username" placeholder="username" class="text_input clear">
+				<input type="submit" id="submit" value="Next" class="button" style="margin:8px">
+			</form>
+		</div>
 	</div>
 
 	<script src="{% static 'wordclouds/scripts/username.js' %}"></script>
