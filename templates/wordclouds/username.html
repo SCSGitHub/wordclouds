@@ -20,6 +20,7 @@
 		<br>
 		Please enter your Mechanical Turk username:
 		<form method="POST" action="../send_username" onsubmit="return go()">
+			{% csrf_token %}
 			<input type="text" name = "username" id="username" placeholder="username" class="text_input clear">
 			<input type="submit" id="submit" value="Next" class="button" style="margin:8px">
 		</form>

@@ -4,9 +4,7 @@ from django.http import HttpResponseRedirect
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .problems import *
-from .synonyms import *
-from .words import *
+from .models import *
 import hashlib, logging
 
 logger = logging.getLogger(__name__)
@@ -23,25 +21,11 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 def index(request):
-    return render(request, 'wordclouds/index.html')
-
-def search(request):
-    template = loader.get_template('wordclouds/search.html')
-    if request.method == 'GET' and len(request.GET) > 0:
-        if request.GET['word_query']:
-            word_obj = Synonym(request.GET['word_query'])
-            return render(request, 'wordclouds/search.html',
-                {'query': request.GET['word_query'],
-                'word': word_obj})
-        else:
-            return render(request, 'wordclouds/index.html')
-
-    return render(request, 'wordclouds/search.html')
+    return redirect("wordclouds:username")
 
 def cloud(request):
     return render(request, 'wordclouds/cloud.html')
 
-@csrf_exempt
 def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
 
@@ -114,18 +98,12 @@ def submit(request):
     else:
         return HttpResponse(status=400)
 
-@csrf_exempt
 def send_username(request):
     if request.method == 'POST':
         logger.debug("Retrieved User name from POST data:")
         user = request.POST.get("username","") #this is the mechanical turk username from input form
         logger.debug(user)
-        #logger.debug("session:")
-        #logger.debug(request.session)
         request.session["username"]=user
-        #return render(request, 'wordclouds/cloud_training.html')
-        #return HttpResponse('ok', status=200)
-        #HttpResponseRedirect("../cloud_training")
-        return redirect("/wordclouds/cloud_training")
+        return redirect("wordclouds:cloud_training")
     else:
         return HttpResponse(status=400)

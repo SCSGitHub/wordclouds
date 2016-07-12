@@ -24,7 +24,6 @@ urlpatterns = [
     url(r'^username/$', views.username, name='username'),
     url(r'^send_username/?$', views.send_username, name='send_username'),
     url(r'^problem/(?P<problem_id>\d+)?$', views.fetch_problem, name='problem'),
-    url(r'^search/$', views.search, name='search'),
     url(r'^submit/?$', views.submit, name='submit'),
     url(r'^synonyms/(?P<word>[\w\d._-]+)?$', views.fetch_synonyms, name='synonyms'),
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
