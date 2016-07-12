@@ -7,7 +7,7 @@
 	{% load staticfiles %}
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
 	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
@@ -19,9 +19,9 @@
 		Welcome to the word cloud interface.
 		<br>
 		Please enter your Mechanical Turk username:
-		<form method="POST" action="../cloud_training" onsubmit="return go()">
-			<input type="text" id="username" placeholder="username">
-			<input type="submit" id="submit" value="Next">
+		<form method="POST" action="../send_username" onsubmit="return go()">
+			<input type="text" name = "username" id="username" placeholder="username" class="text_input clear">
+			<input type="submit" id="submit" value="Next" class="button" style="margin:8px">
 		</form>
 	</div>
 

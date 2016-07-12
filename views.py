@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import loader
@@ -114,9 +114,14 @@ def submit(request):
 @csrf_exempt
 def send_username(request):
     if request.method == 'POST':
-        logger.debug("Retrieved POST data...")
-        user = list(request.POST.keys())[0] #this is the mechanical turk username
+        logger.debug("Retrieved User name from POST data:")
+        user = request.POST.get("username","") #this is the mechanical turk username from input form
         logger.debug(user)
-        return HttpResponseRedirect("../cloud_training")
+        logger.debug("session:")
+        logger.debug(request.session.session_key)
+        #return render(request, 'wordclouds/cloud_training.html')
+        #return HttpResponse('ok', status=200)
+        #HttpResponseRedirect("../cloud_training")
+        return redirect("/wordclouds/cloud_training")
     else:
         return HttpResponse(status=400)

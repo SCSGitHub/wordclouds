@@ -206,6 +206,29 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 
 }
 
+.text_input{
+	padding: 6px 12px;
+	margin:8px;
+	width: 40%;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.button{
+	padding: 6px 12px;
+	margin: 8px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    /*background-color: #fff;*/
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 .active_word{
 /*	position: fixed;
     bottom: 1em;
