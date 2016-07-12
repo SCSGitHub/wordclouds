@@ -101,10 +101,10 @@ def submit(request):
 
 def send_username(request):
     if request.method == 'POST':
-        logger.debug("Retrieved User name from POST data:")
-        user = request.POST.get("username","") #this is the mechanical turk username from input form
-        logger.debug(user)
-        request.session["username"]=user
+        logger.debug("Retrieved mTurk username from POST data:")
+        username = request.POST.get("username","")
+        logger.debug(username)
+        request.session["username"] = username
         return redirect("wordclouds:cloud_training")
     else:
         return HttpResponse(status=400)

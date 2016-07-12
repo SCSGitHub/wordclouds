@@ -81,19 +81,20 @@ class Word():
         hypernyms: List of hypernym Word objects (optional)
     """
 
-    def __init__(self, rep_str, surface_form='', get_hypernyms=False):
-        lemmatizer = WordNetLemmatizer()
+    def __init__(self, rep_str, surface_form='', search_form='', get_hypernyms=False):
 
         if rep_str:
             synset = wordnet.synset(rep_str)
             self.sense = synset.name()
             self.pos = synset.pos()
             self.sense_number = synset.name().split('.')[-1]
-            #self.brothers = [lemma.name() for lemma in synset.lemmas()]
             self.brothers = synset.lemma_names()
             self.brothers = [brother.replace("_", " ") for brother in self.brothers]
-            if type(surface_form) is str and len(surface_form) > 0:
-                self.lemma = lemmatizer.lemmatize(surface_form, self.pos)
+            if type(search_form) is str and len(search_form) > 0:
+                self.lemma = search_form
+                self.surface_form = surface_form
+            elif type(surface_form) is str and len(surface_form) > 0:
+                self.lemma = WordNetLemmatizer().lemmatize(surface_form, self.pos)
                 self.surface_form = surface_form
             else:
                 self.lemma = self.brothers[0]
@@ -103,7 +104,7 @@ class Word():
                 self.__set_all_hypernyms(synset)
         else:
             self.surface_form = surface_form
-            self.lemma = lemmatizer.lemmatize(surface_form)
+            self.lemma = WordNetLemmatizer().lemmatize(surface_form)
             self.sense = None
             self.pos = None
             self.sense_number = None
@@ -118,7 +119,9 @@ class Word():
 
 class WordSense():
     """
-
+    surface_form: The word form of a word as it appears in a problem.
+    search_form: The word form (lemma derived from surface_form) used to search WordNet
+    senses: List of Word objects for each word sense (via WordNet) of the lemma in search_form
     """
     def __init__(self, surface_form, get_hypernyms=False):
         lemmatizer = WordNetLemmatizer()
@@ -132,4 +135,4 @@ class WordSense():
         if len(synsets) < 1:
             self.senses = []
         else:
-            self.senses = [Word(synset.name(), surface_form = self.surface_form, get_hypernyms=get_hypernyms) for synset in synsets]
+            self.senses = [Word(synset.name(), surface_form = self.surface_form, search_form = lemma, get_hypernyms=get_hypernyms) for synset in synsets]
