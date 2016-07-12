@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from .models import *
@@ -42,8 +40,7 @@ def fetch_problem(request, problem_id):
     if request.method == 'GET' and problem_id > 0:
         #create problem object
         problem = Problem.objects.get_problem_with_words(problem_id)
-        logger.debug("Problem fetched:")
-        logger.debug(problem)
+        logger.debug("Problem fetched: {}".format(problem))
         return JSONResponse(ProblemSerializer(problem).data)
     else:
         return HttpResponse(status=400)
@@ -86,25 +83,28 @@ Validate and store POST data
 def submit(request):
     if request.method == 'POST':
         #Format for hash string
-        #user id + hash key + trial num
+        #username + hash key + trial num
         username = request.session["username"] if request.session['username'] else "default"
-        hash_string = username + hash_key + str(1)
+        trial = str(request.session["trial"]) if request.session['trial'] else '0'
+        hash_string = username + hash_key + trial
         md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
         logger.debug("Retrieved POST data...")
         logger.debug(request.POST)
-        logger.debug("Hash created for " + request.session['username'])
-        logger.debug(md5_hash)
-        #return HttpResponse('All good.', status=200)
+        logger.info("Hash created for {}: {}".format(request.session['username'], md5_hash))
+
         return JSONResponse(md5_hash, status=200)
     else:
         return HttpResponse(status=400)
 
 def send_username(request):
     if request.method == 'POST':
-        logger.debug("Retrieved mTurk username from POST data:")
-        username = request.POST.get("username","")
-        logger.debug(username)
+        #validate
+        username = request.POST["username"]
         request.session["username"] = username
+        #check how many times this turker has completed the HIT
+        #for now, assign static value
+        request.session["trial"] = 0
+        logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
         return redirect("wordclouds:cloud_training")
     else:
         return HttpResponse(status=400)
