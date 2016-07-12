@@ -87,15 +87,13 @@ def submit(request):
     if request.method == 'POST':
         #Format for hash string
         #user id + hash key + trial num
-        hash_string = "TEMP" + hash_key + str(1)
+        username = request.session["username"] if request.session['username'] else "default"
+        hash_string = username + hash_key + str(1)
         md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
         logger.debug("Retrieved POST data...")
         logger.debug(request.POST)
-        logger.debug("Hash created.")
+        logger.debug("Hash created for " + request.session['username'])
         logger.debug(md5_hash)
-        logger.debug("Get username from session: ")
-        user = request.session["username"]
-        logger.debug(user)
         #return HttpResponse('All good.', status=200)
         return JSONResponse(md5_hash, status=200)
     else:

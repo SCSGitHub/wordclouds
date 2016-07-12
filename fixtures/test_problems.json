@@ -6,6 +6,7 @@
             "paper_id": 1,
             "desc": "selecting colors that evoke semantics to represent data",
             "user": "rbungard",
+            "trial": 1,
             "submit_date": null
         }
     },
@@ -15,7 +16,8 @@
         "fields": {
             "paper_id": 2,
             "desc": "grayscaling color reduce saliency of object regions in image",
-            "user": "joelchuc",
+            "user": "rbungard",
+            "trial": 2,
             "submit_date": null
         }
     },
@@ -26,6 +28,7 @@
             "paper_id": 3,
             "desc": "person perceives personalities that differ when reading typefaces",
             "user": "vijis",
+            "trial": 1,
             "submit_date": null
         }
     },
@@ -36,6 +39,7 @@
             "paper_id": 4,
             "desc": "properties of clothing affect how people perceive another person's height",
             "user": "sammlapp",
+            "trial": 1,
             "submit_date": null
         }
     }

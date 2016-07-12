@@ -28,6 +28,7 @@ class Problem(models.Model):
     #HIT1: Depending on the data recieved, this data type might change
     desc = models.CharField(max_length=255)
     user = models.CharField(max_length=100, blank=True, null=True)
+    trial = models.IntegerField(null=True)
     submit_date = models.DateTimeField(null=True)
     objects = ProblemManager()
     
@@ -49,13 +50,14 @@ class Problem(models.Model):
 class Synonym(models.Model):
     id = models.IntegerField(primary_key=True)
     problem = models.ForeignKey(Problem, verbose_name="source problem")
-    problem_word_id = models.IntegerField()
+    problem_word_index = models.IntegerField()
     problem_word_form = models.CharField(max_length=50)
     word_abstraction = models.CharField(max_length=10, blank=True, null=True)
     word_form = models.CharField(max_length=50)
     word_lemma = models.CharField(max_length=50, blank=True, null=True)
     word_sense = models.CharField(max_length=50, blank=True, null=True)
     user = models.CharField(max_length=100)
+    trial = models.IntegerField(null=True)
     submit_date = models.DateTimeField(null=True)
     
 
