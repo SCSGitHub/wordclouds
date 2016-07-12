@@ -9,6 +9,11 @@ h2{
 	font-weight:200;
 }
 
+a.ui-link{
+	color:rgb(0, 136, 187);
+	font-weight: 200;
+}
+
 .ui-header.ui-bar-inherit {
     border: none;
 }
@@ -87,6 +92,10 @@ a.ui-btn{
 	bottom:0em;
 }*/
 
+#sentence_text{
+	color: #eee;
+}
+
 #left-menu{
 	background-color: #f6f6f6;
 	/*border: solid rgb(46, 119, 146) .5em;*/
@@ -153,7 +162,7 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 
 .word_column_div.ui-collapsible-collapsed{
 	width: 10em;
-	background: #eee;
+	/*background: #eee;*/
 }
 
 .collapsible3{

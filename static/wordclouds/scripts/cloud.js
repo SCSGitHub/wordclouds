@@ -29,7 +29,7 @@ var cloud = [];
 	// },]
 
 //global variables
-var problem_id = 2; //get as an input
+var problem_id = 3; //get as an input
 var score = 0; 
 var min_score = 1;
 var completion_code = 0;
@@ -51,6 +51,12 @@ function addWord(me){
 
 	$('div[data-role=collapsible]').collapsible();
 
+	//update word and net score
+	var word_score = $(me).parents().eq(3).find("li").length - 1;
+	var word = $(me).parents().eq(6).attr("word");
+	var title = $(me).parents().eq(5).find("h4 a").eq(0);
+	title.text("("+word_score+") "+word);
+	console.log("Words: "+word_score);
 	$(entry_box).val('');
 	score++;
 	$("#score").html(score);
@@ -59,7 +65,7 @@ function addWord(me){
 //function to load sentence
 function loadSentence(){
 	var original_template = $("#word_sentence_template").html();
-	$("#sentence_text").html("Sentence: "+full_sentence);
+	$("#sentence_text").html("\""+full_sentence+"\"");
 
 	for (var i = 0; i<sentence.length; i++){
 		var word_of_sentence = sentence[i];
@@ -68,12 +74,13 @@ function loadSentence(){
 		$(li).attr("word",word_of_sentence);
 		var sentence_div = li.find(".word_column_div");
 		$(sentence_div).attr("id", "word_sentence_"+i+"");
-		$(sentence_div).find(".word_name").html(word_of_sentence);
+		$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
 
 
 		if(isStopWord(word_of_sentence)){//stop word. gray-out, no synonyms
 			$(sentence_div).addClass("no_synonyms");
 			$(sentence_div).find("div").hide();
+			$(sentence_div).find(".word_name").html(word_of_sentence);
 		}else{
 			//bins for synonym and abstract
 			var add_button = $("#add_button_template").html();
@@ -81,6 +88,7 @@ function loadSentence(){
 			var abstract_list = sentence_div.find(".abstract");
 			$(concrete_list).append(add_button);
 			$(abstract_list).append(add_button);
+			$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
 		}
 		
 		var prepared_column = $("#word_sentence_template").html();
@@ -147,7 +155,7 @@ function loadSenses(word_number){
 				$(sense_list).append(new_word);
 			}
 			$(sense_div).attr("id", "sense_"+j+"");
-			$(sense_div).find("h4").html((j+1)+": " +sense.synonym_list[0].word);
+			$(sense_div).find("h4").html((j+1)+": \"" +sense.synonym_list[0].word +"\"");
 			//now add the sense to the list
 			var new_sense = $("#word_sense_template").html();
 			var target = $("#left-menu").find(".ui-collapsible-content");
@@ -212,9 +220,8 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	var url = '../submit';
-	$.post(url, output, function(data){
-		completion_code = data;
-		alert("Your response has been recorded. Your completion code is "+completion_code);
+	$.post(url, output, function(completion_code){
+		alert("Your response has been recorded. Your completion code for Mechanical Turk is "+completion_code);
 		//give code for payment
 	})
 		.fail(function(){
