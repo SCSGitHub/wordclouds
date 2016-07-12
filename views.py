@@ -106,6 +106,9 @@ def submit(request):
         logger.debug(request.POST)
         logger.debug("Hash created.")
         logger.debug(md5_hash)
+        logger.debug("Get username from session: ")
+        user = request.session["username"]
+        logger.debug(user)
         #return HttpResponse('All good.', status=200)
         return JSONResponse(md5_hash, status=200)
     else:
@@ -117,8 +120,9 @@ def send_username(request):
         logger.debug("Retrieved User name from POST data:")
         user = request.POST.get("username","") #this is the mechanical turk username from input form
         logger.debug(user)
-        logger.debug("session:")
-        logger.debug(request.session.session_key)
+        #logger.debug("session:")
+        #logger.debug(request.session)
+        request.session["username"]=user
         #return render(request, 'wordclouds/cloud_training.html')
         #return HttpResponse('ok', status=200)
         #HttpResponseRedirect("../cloud_training")
