@@ -1,0 +1,42 @@
+[
+    {
+        "model": "wordclouds.problem",
+        "pk": 1,
+        "fields": {
+            "paper_id": 1,
+            "desc": "selecting colors that evoke semantics to represent data",
+            "user": "rbungard",
+            "submit_date": null
+        }
+    },
+    {
+        "model": "wordclouds.problem",
+        "pk": 2,
+        "fields": {
+            "paper_id": 2,
+            "desc": "grayscaling color reduce saliency of object regions in image",
+            "user": "joelchuc",
+            "submit_date": null
+        }
+    },
+    {
+        "model": "wordclouds.problem",
+        "pk": 3,
+        "fields": {
+            "paper_id": 3,
+            "desc": "person perceives personalities that differ when reading typefaces",
+            "user": "vijis",
+            "submit_date": null
+        }
+    },
+    {
+        "model": "wordclouds.problem",
+        "pk": 4,
+        "fields": {
+            "paper_id": 4,
+            "desc": "properties of clothing affect how people perceive another person's height",
+            "user": "sammlapp",
+            "submit_date": null
+        }
+    }
+]

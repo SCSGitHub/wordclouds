@@ -5,6 +5,7 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from .models import *
+from .serializers import *
 import hashlib, logging
 
 logger = logging.getLogger(__name__)
@@ -41,6 +42,8 @@ def fetch_problem(request, problem_id):
     if request.method == 'GET' and problem_id > 0:
         #create problem object
         problem = Problem(problem_id)
+        logger.debug("Problem fetched:")
+        logger.debug(problem)
         return JSONResponse(ProblemSerializer(problem).data)
     else:
         return HttpResponse(status=400)

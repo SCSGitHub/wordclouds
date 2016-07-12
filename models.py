@@ -3,65 +3,65 @@ from django.db import models
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
 
-class Synonym(models.Model):
-    id = models.IntegerField(primary_key=True)
-    problem_id = models.IntegerField()
-    problem_word_id = models.IntegerField()
-    problem_word_form = models.CharField(max_length=50)
-    word_abstraction = models.CharField(max_length=10, blank=True, null=True)
-    word_form = models.CharField(max_length=50)
-    word_lemma = models.CharField(max_length=50, blank=True, null=True)
-    word_sense = models.CharField(max_length=50, blank=True, null=True)
-
-    def __str__(self):
-        return ""
-        #return "{{id: {}, source: {}, target: {}}}".format(self.id, self.source_node_id, self.target_node_id)
-
-    class Meta:
-        managed = True #let migrations create the table if it doesn't exist
-        db_table = 'wc_synonyms'
-
-class Problem():
-    """
-    Attributes:
-        id: identifier for the problem
-        desc: string of the full problem description
-        words: array of word objects in the order as they appear in desc
-    """
-
-    """
-    Temporary test problem. These will be pulled from the DB once we have data.
-    """
-    def __init__(self, id):
-
-        self.id = id
-
-        #get desc. would pull form DB
-        if id == 1:
-            self.desc = "selecting colors that evoke semantics to represent data"
-        elif id == 2:
-            self.desc = "grayscaling color reduce saliency of object regions in image"
-        elif id == 3:
-            self.desc = "person perceives personalities that differ when reading typefaces"
-        elif id == 4:
-            self.desc = "properties of clothing affect how people perceive another person's height"
-        else:
-            self.desc = ""
-
-        #split desc into words
-        word_forms = self.desc.split(" ")
+class ProblemManager(models.Manager):
+    def get_problem(self, id):
+        problem = self.get(id=id)
+        word_forms = problem.desc.split(" ")
 
         #get lemma forms of words
         lemmatizer = WordNetLemmatizer()
         lemmas = {form: lemmatizer.lemmatize(form) for form in word_forms}
+        
+        problem.words = [WordSense(form, get_hypernyms=True) for form in word_forms]
+        return problem
 
-        #get the word senses
-        #senses = {form: wordnet.synsets(lemma) for form, lemma in lemmas.items()}
-        #senses = {'selecting': 'select.v.01', 'colors': 'color.n.01', 'that': '', 'resonate': 'evoke.v.01',
-        #    'semantics': 'semantics.n.02', 'to': '', 'represent':'represent.v.02', 'data': 'data.n.01'}
+class Problem(models.Model):
+    """
+    Attributes:
+        id: identifier for the problem
+        desc: string of the full problem description
+        words: array of word sense objects in the order as they appear in desc
+    """
+    
+    id = models.IntegerField(primary_key=True)
+    paper_id = models.IntegerField()
+    #HIT1: Depending on the data recieved, this data type might change
+    desc = models.CharField(max_length=255)
+    user = models.CharField(max_length=100, blank=True, null=True)
+    submit_date = models.DateTimeField(null=True)
+    objects = ProblemManager()
+    
+    def __str__(self):
+        return self.desc
+    
+
+    """
+    Temporary test problem. These will be pulled from the DB once we have data.
+    """
+    #def __init__(self, **kwargs):
+        #self.id
+        #get desc. would pull from DB
+        #if id == 1:
+        #    self.desc = "selecting colors that evoke semantics to represent data"
+        #elif id == 2:
+        #    self.desc = "grayscaling color reduce saliency of object regions in image"
+        #elif id == 3:
+        #    self.desc = "person perceives personalities that differ when reading typefaces"
+        #elif id == 4:
+        #    self.desc = "properties of clothing affect how people perceive another person's height"
+        #else:
+        #    self.desc = ""
+
+        #super(Problem, self).__init__(**kwargs)
+        #split desc into words
+        #word_forms = self.desc.split(" ")
+
+        #get lemma forms of words
+        #lemmatizer = WordNetLemmatizer()
+        #lemmas = {form: lemmatizer.lemmatize(form) for form in word_forms}
 
         #construct array of word objects based on senses
-        self.__get_word_senses(word_forms)
+        #self.words = self.__get_word_senses(word_forms)
 
     """
     Return a list of Word objects for a problem
@@ -69,7 +69,31 @@ class Problem():
     @param senses: The word senses to pull for each word object in WordNet
     """
     def __get_word_senses(self, word_forms):
-        self.words = [WordSense(form, get_hypernyms=True) for form in word_forms]
+        return [WordSense(form, get_hypernyms=True) for form in word_forms]
+        
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_problems'
+    
+class Synonym(models.Model):
+    id = models.IntegerField(primary_key=True)
+    problem = models.ForeignKey(Problem, verbose_name="source problem")
+    problem_word_id = models.IntegerField()
+    problem_word_form = models.CharField(max_length=50)
+    word_abstraction = models.CharField(max_length=10, blank=True, null=True)
+    word_form = models.CharField(max_length=50)
+    word_lemma = models.CharField(max_length=50, blank=True, null=True)
+    word_sense = models.CharField(max_length=50, blank=True, null=True)
+    user = models.CharField(max_length=100)
+    submit_date = models.DateTimeField(null=True)
+    
+
+    def __str__(self):
+        return self.word_form
+
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_synonyms'    
 
 class Word():
     """
