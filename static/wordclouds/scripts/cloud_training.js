@@ -127,24 +127,7 @@ function loadSentence(){
 		var prepared_column = $("#word_sentence_template").html();
 		
 		$("#sentence").append(prepared_column);
-		$('div[id=word_sentence_'+i+']').collapsible({
-			// expand: function(event){
-			// 	var word = $(event.target).parent().attr("word");
-			// 	loadSenses(word);
-			// 	//collapse the other columns
-			// 	var allColumns = $('.word_column_div');
-			// 	for(var j=0; j<allColumns.length; j++){
-			// 		var aColumn = allColumns[j];
-			// 		if($(aColumn).attr("id")!=event.target.id ){
-			// 			try{
-			// 				$(aColumn).collapsible("collapse");
-			// 			}catch(err){
-			// 				//element doesnt exist yet. no problem
-			// 			}
-			// 		}
-			// 	}
-			//},
-		});
+		$('div[id=word_sentence_'+i+']').collapsible();
 		$('.collapsible3').collapsible({
 			collapsed: false,
 		});
@@ -232,43 +215,12 @@ function loadSenses(word_with_senses){
 		            }
 	        	}
 	        },
-		}).disableSelection();
+		});//.disableSelection();
 	}catch(err){
 		//no senses defined
 	}
 
 }
-
-// function submitCloud(){
-// 	//what do we need to do? 
-// 	//for each word-object in cloud, fill in syn_list[] with each {word, sense, lemma}
-// 	var words_array = $("#sentence").find(".word_column");
-
-// 	for(var j = 0; j<words_array.length; j++){
-// 		var cloud_column = {sentence_word: "", syn_list:[]};
-// 		var column_li = words_array[j];
-// 		var sentence_word_ = $(column_li).attr("word");
-// 		cloud_column.sentence_word = sentence_word_;
-
-// 		word_li_array = $("#word_sentence_"+j).find("li");
-// 		for (var i=0; i<word_li_array.length; i++){ 
-// 		//don't include the "add word" <li> element
-// 			word_li = word_li_array[i];
-// 			if(! $(word_li).hasClass("add_button")){
-// 				word_ = $(word_li).find(".word_text").html();
-// 				sense_ = $(word_li).attr("sense");
-// 				lemma_ = $(word_li).attr("lemma"); //add this
-// 				abstraction_level_ = $(word_li).parent().attr("abstraction");
-
-// 				var word_to_add = {word:word_, sense:sense_, lemma:lemma_, abstraction_level:abstraction_level_};
-// 				cloud_column.syn_list.push(word_to_add);	
-// 			}			
-// 		}
-// 		cloud[j]=cloud_column;
-// 	}
-// 	console.log(cloud);
-// 	alert("Your response has been recorded");
-// }
 
 function next(){
 	if($("#sense_0").find("li").length==0){
@@ -302,7 +254,21 @@ window.onload = $(function() {
 		cancel: ".add_button",
 		connectWith: '.word1',
 		dropOnEmpty: true,
-	}).disableSelection();
+	});//.disableSelection();
+
+	$('#instructions').collapsible({
+		collapse: function(ev, ui){
+	        var $btn_text  = $(ev.target).find('.ui-btn');
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+	        $btn_text.text('Instructions (Click to expand)').append($btn_child);
+		},
+		expand: function(ev, ui){
+	        var $btn_text  = $(ev.target).find('.ui-btn');
+	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
+        	$btn_text.text('Instructions (Click to collapse)').append($btn_child);
+		},
+
+	});
 
 });
 
@@ -312,6 +278,7 @@ $('body').on('click', '.ui-icon-delete', function(){
 });
 $('body').on('click', '.new-word', function(){
 	addWord(this);
+	console.log("added");
 });
 $('body').on('keyup', '.add-word-input', function (e) {
 	if (e.keyCode == 13) {
@@ -319,4 +286,8 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		addWord(enter_button);
 	}
 });	
+$('body').on('click', 'input[type="text"]', function(){
+	console.log("focus");
+	$(this).focus();
+});
 

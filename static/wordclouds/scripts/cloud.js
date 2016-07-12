@@ -17,6 +17,7 @@ var input_senses;
 // 	]},
 // ];
 var sentence = []; 
+var word_scores = {};
 var full_sentence = "";
 //output data structure:
 var cloud = [];
@@ -29,7 +30,7 @@ var cloud = [];
 	// },]
 
 //global variables
-var problem_id = 2; //get as an input
+var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
 var min_score = 1;
 var completion_code = 0;
@@ -51,29 +52,45 @@ function addWord(me){
 
 	$('div[data-role=collapsible]').collapsible();
 
+	//update word and net score
+	var word_div = $(me).parents().eq(5);
+	updateWordScore(word_div, 1);
+
 	$(entry_box).val('');
-	score++;
+}
+
+function updateWordScore(word_div, change){
+	var word = $(word_div).parent().attr("word");
+	var word_score = word_scores[word] + change;
+	word_scores[word]= word_score;
+	var title = $(word_div).find("h4 a").eq(0);
+	title.text("("+word_score+") "+word);
+	//console.log("Words: "+word_score);
+	//update total score
+	score = score + change;
 	$("#score").html(score);
 }
 
 //function to load sentence
 function loadSentence(){
 	var original_template = $("#word_sentence_template").html();
-	$("#sentence_text").html("Sentence: "+full_sentence);
+	$("#sentence_text").html("\""+full_sentence+"\"");
 
 	for (var i = 0; i<sentence.length; i++){
 		var word_of_sentence = sentence[i];
+		word_scores[word_of_sentence]=0;
 
 		var li = $("#word_sentence_template").find("li");
 		$(li).attr("word",word_of_sentence);
 		var sentence_div = li.find(".word_column_div");
 		$(sentence_div).attr("id", "word_sentence_"+i+"");
-		$(sentence_div).find(".word_name").html(word_of_sentence);
+		$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
 
 
 		if(isStopWord(word_of_sentence)){//stop word. gray-out, no synonyms
 			$(sentence_div).addClass("no_synonyms");
 			$(sentence_div).find("div").hide();
+			$(sentence_div).find(".word_name").html(word_of_sentence);
 		}else{
 			//bins for synonym and abstract
 			var add_button = $("#add_button_template").html();
@@ -81,6 +98,7 @@ function loadSentence(){
 			var abstract_list = sentence_div.find(".abstract");
 			$(concrete_list).append(add_button);
 			$(abstract_list).append(add_button);
+			$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
 		}
 		
 		var prepared_column = $("#word_sentence_template").html();
@@ -132,10 +150,16 @@ function loadSenses(word_number){
 
 	try{
 		var senses = input_senses[word_number].senses;
+
+		if(senses.length<1){
+			$(target).html("No suggestions available")
+			return;
+		}
 	  	for(var j=0; j<senses.length; j++){
 			var sense = senses[j];
 			var sense_div = $("#word_sense_template").find("div");
 			var sense_list = sense_div.find("ul");
+
 			for (var i=0; i<sense.synonym_list.length; i++){
 				synonym = sense.synonym_list[i];
 				var new_word_li = $("#word_item_template").find("li");
@@ -147,7 +171,7 @@ function loadSenses(word_number){
 				$(sense_list).append(new_word);
 			}
 			$(sense_div).attr("id", "sense_"+j+"");
-			$(sense_div).find("h4").html((j+1)+": " +sense.synonym_list[0].word);
+			$(sense_div).find("h4").html((j+1)+": \"" +sense.synonym_list[0].word +"\"");
 			//now add the sense to the list
 			var new_sense = $("#word_sense_template").html();
 			var target = $("#left-menu").find(".ui-collapsible-content");
@@ -163,14 +187,12 @@ function loadSenses(word_number){
 			dropOnEmpty: true,
 			stop: function( ev, ui) {
 	            if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
-	            	score++;
-	            	$("#score").html(score);
+	            	updateWordScore($(ui.item).parents().eq(4), 1);
 	            }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
-	            	score--;
-	            	$("#score").html(score);
+	            	updateWordScore($(ev.target).parents().eq(3), -1);
 	            }
 	        },
-		}).disableSelection();
+		});//.disableSelection();
 	}catch(err){
 		//no senses defined. its ok
 	}
@@ -212,9 +234,8 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	var url = '../submit';
-	$.post(url, output, function(data){
-		completion_code = data;
-		alert("Your response has been recorded. Your completion code is "+completion_code);
+	$.post(url, output, function(completion_code){
+		alert("Your response has been recorded. Your completion code for Mechanical Turk is "+completion_code);
 		//give code for payment
 	})
 		.fail(function(){
@@ -299,14 +320,12 @@ $(document).ready(function() {
 		dropOnEmpty: true,
 		stop: function( ev, ui) { //change score
 	        if($(ev.target).parents().eq(1).hasClass("sense_div") && $(ui.item).parents().eq(4).hasClass("word_column_div")){//added word
-	        	score++;
-	        	$("#score").html(score);
+	        	updateWordScore($(ui.item).parents().eq(4), 1);
 	        }else if($(ui.item).parents().eq(2).hasClass("sense_div") && $(ev.target).parents().eq(3).hasClass("word_column_div")){
-	        	score--;
-	        	$("#score").html(score);
+	        	updateWordScore($(ev.target).parents().eq(3), -1);
 	        }
     	},
-	}).disableSelection();
+	});//.disableSelection();
 
 	$('#instructions').collapsible({
 		collapse: function(ev, ui){
@@ -333,8 +352,7 @@ function isStopWord(word) {
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
 	if(! ($(this).parents().eq(3).hasClass("sense_div"))){
-		score--;
-		$("#score").html(score);
+		updateWordScore($(this).parents().eq(5),-1);
 	}
 	$(this).parent().remove();
 });

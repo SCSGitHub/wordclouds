@@ -16,14 +16,35 @@
 </head>
 <body>
 	<div data-role="header">
-		<div id="instructions">
-			<p> The goal of this task is to find synonyms and related words for each word in a sentence. We are going to practice with "cook".
-			<p> Add synonyms for a word by typing them into the "add word" box and pressing 'enter'.
-			<p> Then, drag more related words from the Word Bank on the left. Only include words that have the same meaning in the context of the sentence.
-			<p> Notice that each word has two bins, 'concrete' and 'abstract'. Put direct synonyms and 'specific' words into the concrete bin, and more generic words into the 'abstract' bin. For example, 'Golden Retriever' is a specific synonym of dog, while 'animal' is an abstract (more generic) synonym of dog.
-			<p> We've already done 'dog' and 'run' as examples. Complete the 'cook' column by dragging in words from the Word Bank and adding some of your own. When you're done, click "Next" at the bottom of the page.
+				<div id="top-bar">
+			<div style="width:100%" class="clear">
+				<h1 id="title">Word Cloud Game <span style="color:#333">Training</span></h1> 
+			</div>
+			<div data-inset="false" data-collapsed="false" id="instructions" style="width:80%; margin-left: 5%">
+				<h4>Instructions (Click to Collapse)</h4>
+				<br> The goal of this task is to find synonyms and related words for each word in a sentence. We are going to practice with "cook".
+					<div style="padding-left: 4%">
+						<br> (1) Add a couple synonyms for "cook" by typing them in
+						<br> (2) Drag words from the Word Bank into the appropriate bins under "cook"
+						<br> (4) Click Next when you are done
+					</div>
+				<p> Notice that each word has two bins, 'specific' and 'general'. Put domain-specific words into the specific bin, and more generic or abstract words into the 'general' bin. For example, 'Golden Retriever' is a specific synonym of dog, while 'animal' is a general synonym of dog.
+				<p> We've already done 'dog' and 'run' as examples. Complete the 'cook' column, then click "Next" at the bottom of the page.
+			</div>
+			</div>
 		</div>
 	</div>
+<!-- 	<div id="instructions">
+			<br> The goal of this task is to find synonyms and related words for each word in a sentence. We are going to practice with "cook".
+				<div style="padding-left: 30px">
+					<br> (1) Add a couple synonyms for "cook" by typing them in
+					<br> (2) Drag words from the Word Bank into the appropriate bins under "cook"
+					<br> (4) Click Next when you are done
+				</div>
+			<p> Notice that each word has two bins, 'specific' and 'general'. Put domain-specific words into the specific bin, and more generic or abstract words into the 'general' bin. For example, 'Golden Retriever' is a specific synonym of dog, while 'animal' is a general synonym of dog.
+			<p> We've already done 'dog' and 'run' as examples. Complete the 'cook' column, then click "Next" at the bottom of the page.
+		</div>
+	</div> -->
 	<div data-role="main" class="ui-content" id="cloud-area">
 
 		<h2>Try completing this mini-cloud by dragging synonyms from the Word Bank into the "Cook" bin.</h2>
@@ -35,7 +56,7 @@
 			</ul>
 		</div>
 	</div>
-	<div data-role="footer" id="foot" style="padding:10px">
+	<div data-role="footer" id="foot" style="padding:2%">
 		<h1> If you are ready to continue, click 'next' </h1>
 		<input type="button" value="next" id="next" class="ui-btn" onclick="next()">
 	</div>
@@ -74,12 +95,12 @@
 		<div id="word_sentence_" class="quarter word_column_div" data-collapsed="false" >
 		    <h4 class="word_name">Word</h4>
 		    <div class="collapsible3">
-			    <h4 class="concrete_label">Concrete</h4>
+			    <h4 class="concrete_label">Specific</h4>
 			    <ul data-role="listview" class="sort word1 concrete" abstraction="concrete">
 			    </ul>
 		    </div>
 		    <div class="collapsible3">
-		    	<h4 class="abstract_label">Abstract</h4>
+		    	<h4 class="abstract_label">General</h4>
 			    <ul data-role="listview" class="sort word1 abstract" abstraction="abstract">
 			    </ul>
 		    </div>

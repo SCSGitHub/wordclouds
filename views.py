@@ -6,6 +6,8 @@ from .models import *
 from .serializers import *
 import hashlib, logging
 
+from random import randint
+
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
 hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
@@ -104,6 +106,7 @@ def send_username(request):
         #check how many times this turker has completed the HIT
         #for now, assign static value
         request.session["trial"] = 0
+        request.session["problem_id"]=randint(1,4)
         logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
         return redirect("wordclouds:cloud_training")
     else:
