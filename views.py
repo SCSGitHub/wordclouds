@@ -41,7 +41,7 @@ def fetch_problem(request, problem_id):
         
     if request.method == 'GET' and problem_id > 0:
         #create problem object
-        problem = Problem(problem_id)
+        problem = Problem.objects.get_problem_with_words(problem_id)
         logger.debug("Problem fetched:")
         logger.debug(problem)
         return JSONResponse(ProblemSerializer(problem).data)

@@ -4,7 +4,7 @@ from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
 
 class ProblemManager(models.Manager):
-    def get_problem(self, id):
+    def get_problem_with_words(self, id):
         problem = self.get(id=id)
         word_forms = problem.desc.split(" ")
 
@@ -33,35 +33,6 @@ class Problem(models.Model):
     
     def __str__(self):
         return self.desc
-    
-
-    """
-    Temporary test problem. These will be pulled from the DB once we have data.
-    """
-    #def __init__(self, **kwargs):
-        #self.id
-        #get desc. would pull from DB
-        #if id == 1:
-        #    self.desc = "selecting colors that evoke semantics to represent data"
-        #elif id == 2:
-        #    self.desc = "grayscaling color reduce saliency of object regions in image"
-        #elif id == 3:
-        #    self.desc = "person perceives personalities that differ when reading typefaces"
-        #elif id == 4:
-        #    self.desc = "properties of clothing affect how people perceive another person's height"
-        #else:
-        #    self.desc = ""
-
-        #super(Problem, self).__init__(**kwargs)
-        #split desc into words
-        #word_forms = self.desc.split(" ")
-
-        #get lemma forms of words
-        #lemmatizer = WordNetLemmatizer()
-        #lemmas = {form: lemmatizer.lemmatize(form) for form in word_forms}
-
-        #construct array of word objects based on senses
-        #self.words = self.__get_word_senses(word_forms)
 
     """
     Return a list of Word objects for a problem
