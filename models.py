@@ -48,7 +48,20 @@ class Problem(models.Model):
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems'
+
+class CompletionCode(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=64)
+    user = models.CharField(max_length=100, blank=True, null=True)
+    problem = models.ForeignKey(Problem, verbose_name="source problem")
+    trial = models.IntegerField(null=True)
+    task = models.CharField(max_length=20)
+    submit_date = models.DateTimeField(null=True)
     
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_completion_codes'
+
 class Synonym(models.Model):
     id = models.AutoField(primary_key=True)
     problem = models.ForeignKey(Problem, verbose_name="source problem")
@@ -67,10 +80,11 @@ class Synonym(models.Model):
         return self.word_form
 
     @classmethod
-    def store_words(cls, cloud_input, user='', trial=0, problem_id=0):
+    def store_words(cls, cloud_input, user='', trial=0, problem_id=0, submit_date=None):
         synonyms = []
         key = 0
         problem_id = problem_id if problem_id > 0 else cloud_input['problem_id']
+        submit_date = submit_date if submit_date else datetime.now()
         cloud = cloud_input['cloud']
 
         #create list of Synonym objects
@@ -88,7 +102,7 @@ class Synonym(models.Model):
                     word_sense = syn_item['sense'],
                     user = user,
                     trial = trial,
-                    submit_date = datetime.now()
+                    submit_date = submit_date
                 )
                 #synonym.save()
                 synonyms.append(synonym)
