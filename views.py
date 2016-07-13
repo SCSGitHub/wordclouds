@@ -44,6 +44,23 @@ def cloud(request):
     return render(request, 'wordclouds/cloud.html')
 
 @csrf_exempt
+def completed_cloud(request):
+    #my_hash = "333" #request.session['completion_code']
+    
+    if "done" in request.session and request.session["done"]==True :
+        #request.session["done"]=false
+        user = request.session["username"]
+        logger.debug("USERNAME: ")
+        logger.debug(username)
+        #Format for hash string
+        #user id + hash key + trial num
+        md5_hash = request.session["hash"]
+        #return JSONResponse(md5_hash, status=200)
+        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
+    else:
+        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':"not done with task"})
+
+@csrf_exempt
 def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
 
@@ -102,17 +119,26 @@ def submit(request):
     if request.method == 'POST':
         #Format for hash string
         #user id + hash key + trial num
+
         hash_string = "TEMP" + hash_key + str(1)
         md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
         logger.debug("Retrieved POST data...")
         logger.debug(request.POST)
         logger.debug("Hash created.")
         logger.debug(md5_hash)
-        logger.debug("Get username from session: ")
-        user = request.session["username"]
-        logger.debug(user)
+        request.session["hash"]=md5_hash;
+
+        if "username" in request.session and "done" in request.session:
+            logger.debug("Got username from session: ")
+            user = request.session["username"]
+            logger.debug(user)
+            request.session["done"]=True;
+            return HttpResponse("ok", status=200)
+        else:
+            logger.debug("No user")
+            return HttpResponse("no user", status=200)
         #return HttpResponse('All good.', status=200)
-        return JSONResponse(md5_hash, status=200)
+        #return JSONResponse(md5_hash, status=200)
     else:
         return HttpResponse(status=400)
 
@@ -123,7 +149,8 @@ def send_username(request):
         user = request.POST.get("username","") #this is the mechanical turk username from input form
         logger.debug(user)
         request.session["username"]=user
-        request.session["problem_id"]=randint(1,4)
+        request.session["done"]=False;
+        #request.session["problem_id"]=something
         #HttpResponseRedirect("../cloud_training")
         return redirect("/wordclouds/cloud_training")
     else:

@@ -13,6 +13,9 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
 
+	<script> 	var url_submit = "{% url 'wordclouds:submit' %}"; </script>
+	<script> 	var url_completed = "{% url 'wordclouds:completed_cloud' %}"; </script>
+
 </head>
 <body>
 	<div data-role="header">
@@ -22,7 +25,7 @@
 				<div id="score_box">Score: <div id="score" style="float:right">0</div></div>
 			</div>
 			
-			<div data-inset="false" data-collapsed="false" id="instructions" style="width:80%; margin-left: 5%">
+			<div data-inset="false" data-collapsed="false" id="instructions" title="Instructions" style="width:80%; margin-left: 5%">
 				<h4>Instructions (Click to Collapse)</h4>
 				<br> It's time to play! Your goal is to find as many synonyms as possible for each of the word in the sentence. Your score is the total number of words you've added to the cloud. Aim for a score of at least 40 (at leat 8 per word).  
 				<div style="padding-left: 4%">
@@ -38,6 +41,7 @@
 					<br> - Only add synonyms that fit the meaning of the word in the sentence. If the sentence says "I had a blast at the party", then "explosion" is not a good synonym for "blast". "Fun" is a better synonym.
 					<br> - Remember to think about whether a word goes in the generic or specific bin
 					<br> - You don't have to use all the words in the word bank
+					<br> - If you need additional context to understand the sentence, the abstract from which this problem was taken is at the bottom of the page. 
 				</div>
 				<br>Click 'submit' when you have finished.
 				<br>
@@ -54,16 +58,16 @@
 			<ul id="sentence" class="ui-listview" data-role="listview">
 			</ul>
 		</div>
+		<div data-role="collapsible" id="abstract" title="Full abstract from original problem">	
+				<h4>Full abstract from original problem (Click to Expand)</h4>
+				<div id="abstract_text"> Abstract unavailable :/ <br> (sorry!) </div>
+		</div>
 	</div>
 
 	<div data-role="footer" id="foot">
 		<h1> Thanks for completing the task. When you are finished, click submit </h1>
 		<input type="button" value="submit" id="submit" class="ui-btn" onclick="submitCloud()">
 	</div>
-
-<!-- 	<div id="up_arrow">
-		<span class="ui-btn ui-btn-icon-left ui-icon-carat-r">Hi</span>
-	</div> -->
 
 <!--TEMPLATES -->
 <div id="word_item_template" style="display:none">

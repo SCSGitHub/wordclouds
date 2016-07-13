@@ -224,8 +224,7 @@ function loadSenses(word_with_senses){
 
 function next(){
 	if($("#sense_0").find("li").length==0){
-		//alert("you may continue");
-		window.location.replace("http://localhost:8000/wordclouds/cloud/");
+		window.location.replace(cloud_url);
 	}else{
 		alert("Uh oh, you aren't done yet! Drag the synonyms from the word bank into the apropriate bin under 'cook'.")
 	}

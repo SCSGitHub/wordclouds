@@ -52,6 +52,7 @@ a.ui-btn{
     font-weight: inherit;
     color: inherit;
 }
+
 #instructions > div {
 	background-color:inherit;
 	color: inherit;
@@ -83,6 +84,10 @@ a.ui-btn{
 
 .new-word.ui-btn{
 	background-color: rgba(20,200,20,.4);
+}
+
+.ui-header .ui-btn, .ui-footer .ui-btn{
+	font-size: inherit;
 }
 
 .sentence_container{
@@ -124,6 +129,15 @@ a.ui-btn{
 	padding: .5em;
 	margin:auto;
 	display:block;
+}
+
+#abstract{
+	width:80%; 
+	margin-left: 5%; 
+	color:#333;
+	background-color: rgb(46, 119, 146);
+	margin-top:2%;
+
 }
 
 .center {
