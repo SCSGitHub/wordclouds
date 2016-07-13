@@ -1,5 +1,3 @@
-var url = "../send_username/";
-
 function go(){
 	var username = "";
 	username = $("#username").val();

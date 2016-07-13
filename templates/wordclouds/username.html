@@ -7,11 +7,14 @@
 	{% load staticfiles %}
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-	<!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
 	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
+
+	<script>
+		var url = "{% url 'wordclouds:send_username' %}";
+	</script>
 
 </head>
 <body style="background-color:rgb(0, 136, 187); height:100%; width:100%">
@@ -20,13 +23,19 @@
 			Welcome to the word cloud interface.
 			<br>
 			Please enter your Mechanical Turk username:
-			<form method="POST" action="../send_username" onsubmit="return go()">
+			<form method="POST" action="" onsubmit="return go()" id="my_form">
 				{% csrf_token %}
 				<input type="text" name = "username" id="username" placeholder="username" class="text_input clear">
 				<input type="submit" id="submit" value="Next" class="button" style="margin:8px">
 			</form>
 		</div>
 	</div>
+
+	<script>
+		$(document).ready(function() {
+			$("#my_form").attr("action",url); 
+		});
+	</script>
 
 	<script src="{% static 'wordclouds/scripts/username.js' %}"></script>
 

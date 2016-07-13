@@ -30,6 +30,24 @@ def cloud(request):
     request.session["problem_id"] = problem_id
     return render(request, 'wordclouds/cloud.html', { 'problem_id': problem_id })
 
+@csrf_exempt
+def completed_cloud(request):
+    #my_hash = "333" #request.session['completion_code']
+    
+    if "done" in request.session and request.session["done"]==True :
+        #request.session["done"]=false
+        user = request.session["username"]
+        logger.debug("USERNAME: ")
+        logger.debug(username)
+        #Format for hash string
+        #user id + hash key + trial num
+        md5_hash = request.session["hash"]
+        #return JSONResponse(md5_hash, status=200)
+        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
+    else:
+        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':"not done with task"})
+
+@csrf_exempt
 def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
 
@@ -87,7 +105,6 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-
         problem_id =  request.session['problem_id']
         username = request.session["username"] if request.session['username'] else "default"
         trial = request.session["trial"] if request.session['trial'] else 0
@@ -132,6 +149,5 @@ def send_username(request):
         request.session["trial"] = CompletionCode.get_trial(username)
         logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
         return redirect("wordclouds:cloud_training")
-
     else:
         return HttpResponse(status=400)

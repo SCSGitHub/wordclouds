@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^send_username/?$', views.send_username, name='send_username'),
     url(r'^problem/(?P<problem_id>\d+)?$', views.fetch_problem, name='problem'),
     url(r'^submit/?$', views.submit, name='submit'),
+    url(r'^completed_cloud/?$', views.completed_cloud, name='completed_cloud'),
     url(r'^synonyms/(?P<word>[\w\d._-]+)?$', views.fetch_synonyms, name='synonyms'),
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
     url(r'^word_senses/(?P<word>[\w\d._-]+)?$', views.fetch_word_senses, name='word_senses'),

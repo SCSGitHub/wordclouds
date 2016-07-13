@@ -19,6 +19,7 @@ var input_senses;
 var sentence = []; 
 var word_scores = {};
 var full_sentence = "";
+var abstract = "";
 //output data structure:
 var cloud = [];
 	//[ {
@@ -84,8 +85,6 @@ function loadSentence(){
 		$(li).attr("word",word_of_sentence);
 		var sentence_div = li.find(".word_column_div");
 		$(sentence_div).attr("id", "word_sentence_"+i+"");
-		$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
-
 
 		if(isStopWord(word_of_sentence)){//stop word. gray-out, no synonyms
 			$(sentence_div).addClass("no_synonyms");
@@ -98,7 +97,7 @@ function loadSentence(){
 			var abstract_list = sentence_div.find(".abstract");
 			$(concrete_list).append(add_button);
 			$(abstract_list).append(add_button);
-			$(sentence_div).find(".word_name").html(word_of_sentence +" (0)");
+		$(sentence_div).find(".word_name").html("(0) "+word_of_sentence);
 		}
 		
 		var prepared_column = $("#word_sentence_template").html();
@@ -234,13 +233,14 @@ function submitCloud(){
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	var output_str = JSON.stringify(output);
-	var url = '../submit';
-	$.post(url, {cloud_data: output_str}, function(completion_code){
-		alert("Your response has been recorded. Your completion code for Mechanical Turk is "+completion_code);
-		//give code for payment
-	})
-		.fail(function(){
-			alert("failed");
+
+	$.post(url_submit, output_str, function(response){
+		console.log("response: "+response);
+		if (response == "ok" ){
+			window.location.replace(url_completed);
+		}else{
+			alert("No user logged in");
+		}
 	});
 
 }
@@ -287,6 +287,8 @@ function getSentenceFromInput(data){
 	}
 	sentence = input_sentence.words; //store just the word-strings in an array for easy access
 	full_sentence = data.desc;
+	//abstract = data.abstract;
+	abstract = "Sample abstract";
 	return input_sentence;
 }
 
@@ -328,22 +330,23 @@ $(document).ready(function() {
     	},
 	});//.disableSelection();
 
-	$('#instructions').collapsible({
+	$('#instructions, #abstract').collapsible({
 		collapse: function(ev, ui){
+			var title = $(ev.target).attr("title");
 	        var $btn_text  = $(ev.target).find('.ui-btn');
 	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
-	        $btn_text.text('Instructions (Click to expand)').append($btn_child);
+	        $btn_text.text(title + ' (Click to expand)').append($btn_child);
 		},
 		expand: function(ev, ui){
+			var title = $(ev.target).attr("title");
 	        var $btn_text  = $(ev.target).find('.ui-btn');
 	        $btn_child = $btn_text.find('.ui-collapsible-heading-status');
-        	$btn_text.text('Instructions (Click to collapse)').append($btn_child);
+	        $btn_text.text(title + ' (Click to collapse)').append($btn_child);
 		},
 
 	});
 
 });
-
 
 var stopwords = ["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the"];
 function isStopWord(word) {
