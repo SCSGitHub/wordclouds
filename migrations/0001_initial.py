@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Synonym',
             fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('problem_word_index', models.IntegerField()),
                 ('problem_word_form', models.CharField(max_length=50)),
                 ('word_abstraction', models.CharField(blank=True, max_length=10, null=True)),

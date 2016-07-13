@@ -30,7 +30,7 @@ var cloud = [];
 	// },]
 
 //global variables
-var problem_id = 2;//getRandomInt(1,5); //get as an input
+//var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
 var min_score = 1;
 var completion_code = 0;
@@ -233,8 +233,9 @@ function submitCloud(){
 	}
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
+	var output_str = JSON.stringify(output);
 	var url = '../submit';
-	$.post(url, output, function(completion_code){
+	$.post(url, {cloud_data: output_str}, function(completion_code){
 		alert("Your response has been recorded. Your completion code for Mechanical Turk is "+completion_code);
 		//give code for payment
 	})
@@ -364,4 +365,4 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		var enter_button = $(this).parent().parent().parent().find(".new-word");
 		addWord(enter_button);
 	}
-});	
+});

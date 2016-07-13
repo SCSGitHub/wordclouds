@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from .models import *
 from .serializers import *
-import hashlib, logging
+import hashlib, json, logging
 
 from random import randint
 
@@ -25,7 +25,9 @@ def index(request):
     return redirect("wordclouds:username")
 
 def cloud(request):
-    return render(request, 'wordclouds/cloud.html')
+    #generate problem id here. static for now
+    problem_id = 1
+    return render(request, 'wordclouds/cloud.html', { 'problem_id': problem_id })
 
 def cloud_training(request):
     return render(request, 'wordclouds/cloud_training.html')
@@ -84,15 +86,19 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        #Format for hash string
-        #username + hash key + trial num
+
         username = request.session["username"] if request.session['username'] else "default"
-        trial = str(request.session["trial"]) if request.session['trial'] else '0'
-        hash_string = username + hash_key + trial
+        trial = request.session["trial"] if request.session['trial'] else 0
+        hash_string = username + hash_key + str(trial)
         md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
-        logger.debug("Retrieved POST data...")
-        logger.debug(request.POST)
+        post = json.loads(request.POST['cloud_data'])
+        request.session['completion_code'] = md5_hash
+
+        logger.debug(post)
         logger.info("Hash created for {}: {}".format(request.session['username'], md5_hash))
+
+        #save data
+        Synonym.store_words(post, username, trial, request.session['problem_id'])
 
         return JSONResponse(md5_hash, status=200)
     else:

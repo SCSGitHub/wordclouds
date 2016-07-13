@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
+from datetime import datetime
 from django.db import models
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
+
 
 class ProblemManager(models.Manager):
     def get_problem_with_words(self, id):
@@ -48,7 +50,7 @@ class Problem(models.Model):
         db_table = 'wc_problems'
     
 class Synonym(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     problem = models.ForeignKey(Problem, verbose_name="source problem")
     problem_word_index = models.IntegerField()
     problem_word_form = models.CharField(max_length=50)
@@ -63,6 +65,36 @@ class Synonym(models.Model):
 
     def __str__(self):
         return self.word_form
+
+    @classmethod
+    def store_words(cls, cloud_input, user='', trial=0, problem_id=0):
+        synonyms = []
+        key = 0
+        problem_id = problem_id if problem_id > 0 else cloud_input['problem_id']
+        cloud = cloud_input['cloud']
+
+        #create list of Synonym objects
+        for cloud_item in cloud:
+            key += 1
+
+            for syn_item in cloud_item['syn_list']:
+                synonym = Synonym(
+                    problem_id= problem_id,
+                    problem_word_index = key,
+                    problem_word_form = cloud_item['sentence_word'],
+                    word_abstraction = syn_item['abstraction_level'],
+                    word_form = syn_item['word'],
+                    word_lemma = syn_item['lemma'],
+                    word_sense = syn_item['sense'],
+                    user = user,
+                    trial = trial,
+                    submit_date = datetime.now()
+                )
+                #synonym.save()
+                synonyms.append(synonym)
+
+        #batch save
+        cls.objects.bulk_create(synonyms)
 
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
