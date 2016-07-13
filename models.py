@@ -1,9 +1,38 @@
 from __future__ import unicode_literals
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
 
+class CompletionCode(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=64)
+    user = models.CharField(max_length=100, blank=True, null=True)
+    problem = models.ForeignKey('Problem', verbose_name="source problem")
+    trial = models.IntegerField(null=True)
+    task = models.CharField(max_length=20)
+    submit_date = models.DateTimeField(null=True)
+    
+    @classmethod
+    def get_trial(cls, user):
+        cnt = CompletionCode.objects.filter(user__contains=user).count()
+        return cnt + 1
+        
+    @classmethod
+    def get_last_problem_id(cls):
+        try:
+            last_code = CompletionCode.objects.latest('submit_date')
+            if last_code.problem_id:
+                return last_code.problem_id
+            else:
+                return 0
+        except ObjectDoesNotExist:
+            return 0
+    
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_completion_codes'
 
 class ProblemManager(models.Manager):
     def get_problem_with_words(self, id):
@@ -34,6 +63,22 @@ class Problem(models.Model):
     submit_date = models.DateTimeField(null=True)
     objects = ProblemManager()
     
+    @classmethod
+    def get_max_id(cls):
+        max_item = Problem.objects.all().aggregate(models.Max('id'))
+        if max_item:
+            return max_item['id__max']
+        else:
+            return None
+            
+    @classmethod
+    def get_new_id(cls):
+        problem_id = CompletionCode.get_last_problem_id()
+        if problem_id < cls.get_max_id():
+            return problem_id + 1
+        else:
+            return 1
+            
     def __str__(self):
         return self.desc
 
@@ -49,22 +94,9 @@ class Problem(models.Model):
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems'
 
-class CompletionCode(models.Model):
-    id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=64)
-    user = models.CharField(max_length=100, blank=True, null=True)
-    problem = models.ForeignKey(Problem, verbose_name="source problem")
-    trial = models.IntegerField(null=True)
-    task = models.CharField(max_length=20)
-    submit_date = models.DateTimeField(null=True)
-    
-    class Meta:
-        managed = True #let migrations create the table if it doesn't exist
-        db_table = 'wc_completion_codes'
-
 class Synonym(models.Model):
     id = models.AutoField(primary_key=True)
-    problem = models.ForeignKey(Problem, verbose_name="source problem")
+    problem = models.ForeignKey('Problem', verbose_name="source problem")
     problem_word_index = models.IntegerField()
     problem_word_form = models.CharField(max_length=50)
     word_abstraction = models.CharField(max_length=10, blank=True, null=True)

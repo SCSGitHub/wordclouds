@@ -26,8 +26,8 @@ def index(request):
     return redirect("wordclouds:username")
 
 def cloud(request):
-    #generate problem id here. static for now
-    problem_id = 1
+    problem_id = Problem.get_new_id()
+    request.session["problem_id"] = problem_id
     return render(request, 'wordclouds/cloud.html', { 'problem_id': problem_id })
 
 def cloud_training(request):
@@ -129,8 +129,7 @@ def send_username(request):
 
         #check how many times this turker has completed the HIT
         #for now, assign static value
-        request.session["trial"] = 0
-        request.session["problem_id"]=randint(1,4)
+        request.session["trial"] = CompletionCode.get_trial(username)
         logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
         return redirect("wordclouds:cloud_training")
 
