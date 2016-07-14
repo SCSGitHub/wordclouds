@@ -367,3 +367,8 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		addWord(enter_button);
 	}
 });
+$('#to_abstract').on('click', function(){
+	window.location.hash = '#to_abstract';
+	$( "#abstract" ).collapsible( "expand" );
+});
+
