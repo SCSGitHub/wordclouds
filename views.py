@@ -105,7 +105,7 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        if 'username' in request.session:
+        if 'username' in request.session and 'done' in request.session:
             problem_id =  request.session['problem_id']
             username = request.session["username"] if request.session['username'] else "default"
             trial = request.session["trial"] if request.session['trial'] else 0
