@@ -234,7 +234,7 @@ function submitCloud(){
 	var output = {problem_id: problem_id, cloud: cloud};
 	var output_str = JSON.stringify(output);
 
-	$.post(url_submit, output_str, function(response){
+	$.post(url_submit, {cloud_data: output_str}, function(response){
 		console.log("response: "+response);
 		if (response == "ok" ){
 			window.location.replace(url_completed);

@@ -41,7 +41,7 @@ def completed_cloud(request):
         logger.debug(username)
         #Format for hash string
         #user id + hash key + trial num
-        md5_hash = request.session["hash"]
+        md5_hash = request.session["completion_code"]
         #return JSONResponse(md5_hash, status=200)
         return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
     else:
