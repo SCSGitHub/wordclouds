@@ -124,7 +124,7 @@ a.ui-btn{
 	overflow: auto;
 }
 
-#submit, #next{
+#submit, #next, #start{
 	background-color: rgba(20,200,20,.4);
 	padding: .5em;
 	margin:auto;

@@ -285,8 +285,9 @@ $('body').on('keyup', '.add-word-input', function (e) {
 		addWord(enter_button);
 	}
 });	
-$('body').on('click', 'input[type="text"]', function(){
-	console.log("focus");
-	$(this).focus();
+$('#start').on('click', function(){
+	//adjust div size
+	$(this).parents().eq(1).height("auto");
+	$(this).remove();
 });
 

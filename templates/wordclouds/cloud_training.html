@@ -17,21 +17,22 @@
 </head>
 <body>
 	<div data-role="header">
-				<div id="top-bar">
+		<div id="top-bar">
 			<div style="width:100%" class="clear">
 				<h1 id="title">Word Cloud Game <span style="color:#333">Training</span></h1> 
 			</div>
-			<div data-inset="false" data-collapsed="false" id="instructions" style="width:80%; margin-left: 5%">
+			<div data-inset="false" data-collapsed="false" id="instructions" style="width:80%; height:100vh; margin-left: 5%">
 				<h4>Instructions (Click to Collapse)</h4>
 				<br> The goal of this task is to find synonyms and related words for each word in a sentence. We are going to practice with "cook".
 					<div style="padding-left: 4%">
 						<br> (1) Add a couple synonyms for "cook" by typing them in
 						<br> (2) Drag words from the Word Bank into the appropriate bins under "cook"
-						<br> (4) Click Next when you are done
+						<br> (3) Click Next when you are done
 					</div>
-				<p> Notice that each word has two bins, 'specific' and 'general'. Put domain-specific words into the specific bin, and more generic or abstract words into the 'general' bin. For example, 'Golden Retriever' is a specific synonym of dog, while 'animal' is a general synonym of dog.
-				<p> We've already done 'dog' and 'run' as examples. Complete the 'cook' column, then click "Next" at the bottom of the page.
-			</div>
+				<br><br> Notice that each word has two bins, 'specific' and 'general'. Put domain-specific words into the specific bin, and more generic or abstract words into the 'general' bin. For example, 'Golden Retriever' is a specific synonym of dog, while 'animal' is a general synonym of dog.
+				<br><br> We've already done 'dog' and 'run' as examples. Complete the 'cook' column, then click "Next" at the bottom of the page.
+				<br><br>
+				<input type="button" value="Start" id="start" class="ui-btn">
 			</div>
 		</div>
 	</div>
@@ -79,7 +80,7 @@
 <div id="add_button_template" style="display:none">
 	<li class="add_button ui-li-has-alt">
 		<a href="#" class="ui-btn">
-			<input type="text" class="add-word-input" placeholder="new word">
+			<input type="text" class="add-word-input" placeholder="Type Word Here">
 		</a>
 		<a class="ui-btn ui-icon-plus ui-btn-icon-left new-word"></a>
 	</li>
