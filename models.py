@@ -55,11 +55,14 @@ class Problem(models.Model):
     """
     
     id = models.IntegerField(primary_key=True)
-    paper_id = models.IntegerField()
+    turk_id = models.CharField(max_length=45, blank=True, null=True)
+    paper_id = models.IntegerField(null=True)
+    abstract = models.TextField()
     #HIT1: Depending on the data recieved, this data type might change
     desc = models.CharField(max_length=255)
     user = models.CharField(max_length=100, blank=True, null=True)
     trial = models.IntegerField(null=True)
+    type = models.CharField(max_length=20, blank=True, null=True)
     submit_date = models.DateTimeField(null=True)
     objects = ProblemManager()
     

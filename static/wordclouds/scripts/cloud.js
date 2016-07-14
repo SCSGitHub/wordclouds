@@ -19,7 +19,7 @@ var input_senses;
 var sentence = []; 
 var word_scores = {};
 var full_sentence = "";
-var abstract = "";
+
 //output data structure:
 var cloud = [];
 	//[ {
@@ -287,13 +287,11 @@ function getSentenceFromInput(data){
 	}
 	sentence = input_sentence.words; //store just the word-strings in an array for easy access
 	full_sentence = data.desc;
-	//abstract = data.abstract;
-	abstract = "Sample abstract";
 	return input_sentence;
 }
 
 function getSynonyms(problem_no){
-	var url = 'http://scsweb-d11.andrew.cmu.edu:81/wordclouds/problem/'+problem_no;
+	var url = '/wordclouds/problem/'+problem_no;
 	//using ajax synchronous because it needs to load before dom elements (maybe there's a better way)
 	$.ajax({
 	     async: false,

@@ -20,4 +20,5 @@ class WordSenseSerializer(serializers.Serializer):
 class ProblemSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     desc = serializers.CharField()
+    #abstract = serializers.CharField()
     words = WordSenseSerializer(many=True)

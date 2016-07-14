@@ -28,7 +28,10 @@ def index(request):
 def cloud(request):
     problem_id = Problem.get_new_id()
     request.session["problem_id"] = problem_id
-    return render(request, 'wordclouds/cloud.html', { 'problem_id': problem_id })
+    abstract = Problem.objects.get(id=problem_id).abstract
+    if type(abstract) != str or len(abstract) < 1:
+        abstract = "Sorry, there is no abstract available."
+    return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id })
 
 @csrf_exempt
 def completed_cloud(request):
@@ -37,11 +40,9 @@ def completed_cloud(request):
     if "done" in request.session and request.session["done"]==True :
         #request.session["done"]=false
         user = request.session["username"]
-        logger.debug("USERNAME: ")
-        logger.debug(username)
-        #Format for hash string
-        #user id + hash key + trial num
         md5_hash = request.session["completion_code"]
+        logger.debug("Completed by user {} with code {}".format(user, md5_hash))
+
         #return JSONResponse(md5_hash, status=200)
         return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
     else:
