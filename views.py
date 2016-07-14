@@ -105,36 +105,40 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        problem_id =  request.session['problem_id']
-        username = request.session["username"] if request.session['username'] else "default"
-        trial = request.session["trial"] if request.session['trial'] else 0
-        submit_date = datetime.now()
+        if 'username' in request.session:
+            problem_id =  request.session['problem_id']
+            username = request.session["username"] if request.session['username'] else "default"
+            trial = request.session["trial"] if request.session['trial'] else 0
+            submit_date = datetime.now()
 
-        hash_string = username + hash_key + str(trial) + str(problem_id)
-        md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
-        post = json.loads(request.POST['cloud_data'])
+            hash_string = username + hash_key + str(trial) + str(problem_id)
+            md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+            post = json.loads(request.POST['cloud_data'])
 
-        #save synonym data
-        Synonym.store_words(
-            post,
-            user = username,
-            trial = trial,
-            problem_id = problem_id,
-            submit_date= submit_date
-        )
+            #save synonym data
+            Synonym.store_words(
+                post,
+                user = username,
+                trial = trial,
+                problem_id = problem_id,
+                submit_date= submit_date
+            )
 
-        #save completion code data
-        code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task="word clouds", submit_date=submit_date)
-        code.save()
+            #save completion code data
+            code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task="word clouds", submit_date=submit_date)
+            code.save()
 
-        #store in session for next page
-        request.session['completion_code'] = md5_hash
-        request.session['completion_timestamp'] = '{:%m/%d/%Y %H:%M:%S}'.format(submit_date)
+            #store in session for next page
+            request.session['completion_code'] = md5_hash
+            request.session['completion_timestamp'] = '{:%m/%d/%Y %H:%M:%S}'.format(submit_date)
 
-        logger.debug(post)
-        logger.info("Hash created for {} ({}) at {}".format(username, md5_hash, request.session['completion_timestamp']))
+            logger.debug(post)
+            logger.info("Hash created for {} ({}) at {}".format(username, md5_hash, request.session['completion_timestamp']))
 
-        return JSONResponse(md5_hash, status=200)
+            #return JSONResponse(md5_hash, status=200)
+            return HttpResponse("ok", status=200)
+        else:
+            return HttpResonse("No User", status=200)
     else:
         return HttpResponse(status=400)
 
@@ -143,6 +147,7 @@ def send_username(request):
         #validate
         username = request.POST["username"]
         request.session["username"] = username
+        request.session["done"]= False
 
         #check how many times this turker has completed the HIT
         #for now, assign static value
