@@ -33,7 +33,7 @@ var cloud = [];
 //global variables
 //var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
-var min_score = 1;
+var min_score = 20;
 var completion_code = 0;
 
 //helper functions
