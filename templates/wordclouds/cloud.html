@@ -17,6 +17,7 @@
 		var problem_id = {{ problem_id }};
 	 	var url_submit = "{% url 'wordclouds:submit' %}";
 	 	var url_completed = "{% url 'wordclouds:completed_cloud' %}";
+		var url_problem = "{% url 'wordclouds:problem' %}" + problem_id;
 	</script>
 
 </head>

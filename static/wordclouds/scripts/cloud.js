@@ -290,13 +290,12 @@ function getSentenceFromInput(data){
 	return input_sentence;
 }
 
-function getSynonyms(problem_no){
-	var url = '/wordclouds/problem/'+problem_no;
+function getSynonyms(url_problem){
 	//using ajax synchronous because it needs to load before dom elements (maybe there's a better way)
 	$.ajax({
 	     async: false,
 	     type: 'GET',
-	     url: url,
+	     url: url_problem,
 	     success: function(data) {
 			input_sentence = getSentenceFromInput(data);
 			input_senses = getSensesFromInput(data);
@@ -310,7 +309,7 @@ function getRandomInt(min, max) {
 
 $(document).ready(function() {
 	cloud = [];
-	getSynonyms(problem_id);//get input data from api
+	getSynonyms(url_problem);//get input data from api
 
 	loadSenses(0); //display suggestions for the first word
 	loadSentence();
