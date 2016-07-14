@@ -368,7 +368,9 @@ $('body').on('keyup', '.add-word-input', function (e) {
 	}
 });
 $('#to_abstract').on('click', function(){
-	window.location.hash = '#to_abstract';
+	console.log("scroll");
+	$('html, body').animate({
+        scrollTop: $("#abstract").offset().top
+    }, 1000);
 	$( "#abstract" ).collapsible( "expand" );
 });
-
