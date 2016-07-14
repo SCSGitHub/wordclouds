@@ -135,6 +135,7 @@ def submit(request):
             logger.debug(post)
             logger.info("Hash created for {} ({}) at {}".format(username, md5_hash, request.session['completion_timestamp']))
 
+            request.session["done"] = True
             #return JSONResponse(md5_hash, status=200)
             return HttpResponse("ok", status=200)
         else:
