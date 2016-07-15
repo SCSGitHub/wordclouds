@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^cloud_training/?$', views.cloud_training, name='cloud_training'),
     url(r'^username/$', views.username, name='username'),
     url(r'^send_username/?$', views.send_username, name='send_username'),
+    url(r'^user_feedback/?$', views.user_feedback, name='user_feedback'),
     url(r'^problem/(?P<problem_id>\d+)?$', views.fetch_problem, name='problem'),
     url(r'^submit/?$', views.submit, name='submit'),
     url(r'^completed_cloud/?$', views.completed_cloud, name='completed_cloud'),

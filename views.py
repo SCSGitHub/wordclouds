@@ -167,3 +167,11 @@ def send_username(request):
         return redirect("wordclouds:cloud_training")
     else:
         return HttpResponse(status=400)
+
+def user_feedback(request):
+    if request.method == 'POST':
+        logger.debug("user feedback:")
+        logger.debug(request.POST["feedback_text"])
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)
