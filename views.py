@@ -41,7 +41,7 @@ def cloud(request):
 def completed_cloud(request):
     #my_hash = "333" #request.session['completion_code']
     template_vars = {
-        'completion_code': "not done with task",
+        'completion_code': "Not Available",
         'username': '',
         'trial': 0,
         'problem_id': 0

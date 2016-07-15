@@ -33,9 +33,9 @@ var cloud = [];
 //global variables
 //var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
-var min_score = 1;
+var min_score = 20;
 var target_score = 40;
-var min_per_word = 0;
+var min_per_word = 1;
 var completion_code = 0;
 
 //helper functions
@@ -43,8 +43,9 @@ function addWord(me){
 	var word_list_end = $(me).parent();
 	var entry_box = $(me).parent().find('a').find('input')
 	var word_text = entry_box.val();
-	if(/\S/.test(word_text)==false){
-		return; //don't enter empty words
+	if(/\S/.test(word_text)==false || word_text==$(me).parents().find(".word_column").attr("word")){
+		$(entry_box).val('');
+		return; //don't enter empty words or the same word
 	}
 	var new_word_text = $("#word_item_template").find("li").find(".word_text");
 	new_word_text.html(word_text);
@@ -148,6 +149,7 @@ function loadSenses(word_number){
   	var original_template = $("#word_sense_template").html();
 	var target = $("#left-menu").find(".ui-collapsible-content");
 	$(target[0]).html("");
+	var this_word = sentence[word_number];
 
 	try{
 		var senses = input_senses[word_number].senses;
@@ -163,6 +165,9 @@ function loadSenses(word_number){
 
 			for (var i=0; i<sense.synonym_list.length; i++){
 				synonym = sense.synonym_list[i];
+				if(synonym.word == this_word){
+					continue;
+				}
 				var new_word_li = $("#word_item_template").find("li");
 				var new_word_text = new_word_li.find(".word_text");
 				new_word_text.html(synonym.word);
@@ -170,6 +175,9 @@ function loadSenses(word_number){
 				new_word_li.attr("lemma",synonym.lemma);
 				var new_word = $(new_word_text).parent().parent().html();
 				$(sense_list).append(new_word);
+			}
+			if($(sense_list).find("li").length<1){
+				continue;
 			}
 			$(sense_div).attr("id", "sense_"+j+"");
 			$(sense_div).find("h4").html((j+1)+": \"" +sense.synonym_list[0].word +"\"");

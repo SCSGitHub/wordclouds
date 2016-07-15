@@ -31,7 +31,7 @@
 				<input type="hidden" id="trial" name="trial" value="{{trial}}" />
 				<input type="hidden" id="problem_id" name="problem_id" value="{{problem_id}}" />
 				Let us know how we can improve this HIT (optional):
-				<textarea rows="4" style="width:100%" name="feedback_text" id="feedback_text"></textarea>
+				<textarea rows="4" style="width:100%; border-radius: 5px; border: none;" name="feedback_text" id="feedback_text" placeholder="type feedback here, then click on Send Feedback"></textarea>
 				<input type="submit" id="submit" value="Send Feedback" class="button" style="margin:8px 20px">
 			</form>
 		</div>
@@ -45,7 +45,8 @@
 				console.log($(this).serialize())
 		    	$.post(feedback_url, $(this).serialize(), function(response){
 					ft_elem = document.getElementById("feedback_text");
-		    		ft_elem.value = 'Thank you for your feedback!';
+		    		ft_elem.placeholder='Thank you for your feedback!';
+		    		ft_elem.value='';
 					ft_elem.setAttribute('disabled', 'disabled');
 					$("#submit").hide();
 		        },'text');
