@@ -35,6 +35,19 @@ class CompletionCode(models.Model):
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_completion_codes'
 
+class Feedback(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.CharField(max_length=100, blank=True, null=True)
+    trial = models.IntegerField(null=True)
+    task = models.CharField(max_length=20)
+    problem_id = models.IntegerField(null=True)
+    text = models.TextField(blank=True, null=True)
+    submit_date = models.DateTimeField(null=True)
+
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_feedback'
+
 class ProblemManager(models.Manager):
     char_excl = [',','.','?','!', '(',')', '[', ']', '{', '}', '\\', '/', '"', ':' ,'&', '=', '+', '#', '$', '%', '^', '*', '<', '>', ';', '`', '~', '|']
 

@@ -12,6 +12,7 @@ from random import randint
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
 hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
+task_desc = 'word clouds'
 
 class JSONResponse(HttpResponse):
     """
@@ -39,20 +40,29 @@ def cloud(request):
 @csrf_exempt
 def completed_cloud(request):
     #my_hash = "333" #request.session['completion_code']
+    template_vars = {
+        'completion_code': "not done with task",
+        'username': '',
+        'trial': 0,
+        'problem_id': 0
+    }
     
     if "done" in request.session and request.session["done"]==True :
-        user = request.session.pop("username") #removes username
-        md5_hash = request.session["completion_code"]
-        logger.debug("Completed by user {} with code {}".format(user, md5_hash))
+        template_vars['username'] = request.session.pop("username") #removes username
+        template_vars['completion_code'] = request.session.pop("completion_code")
+        template_vars['trial'] = request.session.pop("trial")
+        template_vars['problem_id'] = request.session.pop("problem_id")
+        
+        logger.debug("Completed by user {} with code {}".format(template_vars['username'], template_vars['completion_code']))
 
         #clear the session so that they have to restart
         request.session["done"]=False
-        request.session["hash"]="Not Available"
+        request.session["completion_code"]=None
 
         #return JSONResponse(md5_hash, status=200)
-        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
+        return render(request, 'wordclouds/completed_cloud.html', template_vars)
     else:
-        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':"not done with task"})
+        return render(request, 'wordclouds/completed_cloud.html', template_vars)
 
 @csrf_exempt
 def cloud_training(request):
@@ -135,7 +145,7 @@ def submit(request):
             )
 
             #save completion code data
-            code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task="word clouds", submit_date=submit_date)
+            code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task= task_desc, submit_date=submit_date)
             code.save()
 
             #store in session for next page
@@ -172,6 +182,20 @@ def user_feedback(request):
     if request.method == 'POST':
         logger.debug("user feedback:")
         logger.debug(request.POST["feedback_text"])
+
+        #POST data should be cleaned
+        feedback_data = {
+            'user': request.POST['username'],
+            'problem_id': request.POST['problem_id'],
+            'trial': request.POST['trial'],
+            'text': request.POST['feedback_text'],
+            'task': task_desc,
+            'submit_date': datetime.now()
+        }
+
+        #store feedback
+        fb = Feedback.objects.create(**feedback_data)
+        fb.save()
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)

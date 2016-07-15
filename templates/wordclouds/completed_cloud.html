@@ -27,6 +27,9 @@
 		<div style="padding:5%">
 			<form method="POST" action="" id="feedback_form">
 				{% csrf_token %}
+				<input type="hidden" id="username" name="username" value="{{username}}" />
+				<input type="hidden" id="trial" name="trial" value="{{trial}}" />
+				<input type="hidden" id="problem_id" name="problem_id" value="{{problem_id}}" />
 				Let us know how we can improve this HIT (optional):
 				<textarea rows="4" style="width:100%" name="feedback_text" id="feedback_text"></textarea>
 				<input type="submit" id="submit" value="Send Feedback" class="button" style="margin:8px 20px">
@@ -39,8 +42,12 @@
 		    var $form = $('#feedback_form');
 		    $form.submit(function(){
 		    	console.log("form submit");
+				console.log($(this).serialize())
 		    	$.post(feedback_url, $(this).serialize(), function(response){
-		    		document.getElementById("feedback_text").value='Thank you for your feedback!';
+					ft_elem = document.getElementById("feedback_text");
+		    		ft_elem.value = 'Thank you for your feedback!';
+					ft_elem.setAttribute('disabled', 'disabled');
+					$("#submit").hide();
 		        },'text');
 		        return false;
 			});
