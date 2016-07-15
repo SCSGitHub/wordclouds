@@ -43,8 +43,9 @@ function addWord(me){
 	var word_list_end = $(me).parent();
 	var entry_box = $(me).parent().find('a').find('input')
 	var word_text = entry_box.val();
-	if(/\S/.test(word_text)==false){
-		return; //don't enter empty words
+	if(/\S/.test(word_text)==false || word_text==$(me).parents().find(".word_column").attr("word")){
+		$(entry_box).val('');
+		return; //don't enter empty words or the same word
 	}
 	var new_word_text = $("#word_item_template").find("li").find(".word_text");
 	new_word_text.html(word_text);
