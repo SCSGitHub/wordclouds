@@ -26,22 +26,28 @@ def index(request):
     return redirect("wordclouds:username")
 
 def cloud(request):
-    problem_id = Problem.get_new_id()
-    request.session["problem_id"] = problem_id
-    abstract = Problem.objects.get(id=problem_id).abstract
-    if type(abstract) != str or len(abstract) < 1:
-        abstract = "Sorry, there is no abstract available."
-    return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id })
+    if "username" in request.session:
+        problem_id = Problem.get_new_id()
+        request.session["problem_id"] = problem_id
+        abstract = Problem.objects.get(id=problem_id).abstract
+        if type(abstract) != str or len(abstract) < 1:
+            abstract = "Sorry, there is no abstract available."
+        return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id })
+    else:
+        return redirect("wordclouds:username")
 
 @csrf_exempt
 def completed_cloud(request):
     #my_hash = "333" #request.session['completion_code']
     
     if "done" in request.session and request.session["done"]==True :
-        #request.session["done"]=false
-        user = request.session["username"]
+        user = request.session.pop("username") #removes username
         md5_hash = request.session["completion_code"]
         logger.debug("Completed by user {} with code {}".format(user, md5_hash))
+
+        #clear the session so that they have to restart
+        request.session["done"]=False
+        request.session["hash"]="Not Available"
 
         #return JSONResponse(md5_hash, status=200)
         return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
@@ -50,7 +56,10 @@ def completed_cloud(request):
 
 @csrf_exempt
 def cloud_training(request):
-    return render(request, 'wordclouds/cloud_training.html')
+    if "username" in request.session:
+        return render(request, 'wordclouds/cloud_training.html')
+    else:
+        return redirect("wordclouds:username")
 
 def username(request):
     return render(request, 'wordclouds/username.html')
@@ -106,9 +115,9 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        if 'username' in request.session and 'done' in request.session:
+        if "username" in request.session and 'done' in request.session:
             problem_id =  request.session['problem_id']
-            username = request.session["username"] if request.session['username'] else "default"
+            username = request.session["username"]
             trial = request.session["trial"] if request.session['trial'] else 0
             submit_date = datetime.now()
 

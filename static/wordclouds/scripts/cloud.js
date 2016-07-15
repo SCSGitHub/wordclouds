@@ -34,6 +34,8 @@ var cloud = [];
 //var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
 var min_score = 20;
+var target_score = 40;
+var min_per_word = 3;
 var completion_code = 0;
 
 //helper functions
@@ -197,15 +199,23 @@ function loadSenses(word_number){
 	}
 }
 function submitCloud(){
-
+	//check if they've scored enough synonyms on each word and in total
 	if(score<min_score){
 		alert("your score is only "+score+"! You need to enter at least "+min_score+" words.");
 		return;
-	}else if(confirm("Your score is "+score+". You should aim for a score of at least 40. Are you done with your cloud?")) {
+	}else if(min_word_score()<min_per_word){
+		alert("you must score at least 3 synonyms for each word that isn't grayed out");
+		return;
+	}else if(score<target_score){
+		if(confirm("Your score is "+score+". You should aim for a score of at least "+target_score+". Are you done with your cloud?")) {
+			//continue
+		} else {
+		    return;
+		}
+	}else{
 		//continue
-	} else {
-	    return;
 	}
+	//create output: 
 	//for each word-object in cloud, fill in syn_list[] with each {word, sense, lemma}
 	var words_array = $("#sentence").find(".word_column");
 	for(var j = 0; j<words_array.length; j++){
@@ -216,7 +226,6 @@ function submitCloud(){
 
 		word_li_array = $("#word_sentence_"+j).find("li");
 		for (var i=0; i<word_li_array.length; i++){ 
-		//don't include the "add word" <li> element
 			word_li = word_li_array[i];
 			if(! $(word_li).hasClass("add_button")){
 				word_ = $(word_li).find(".word_text").html();
@@ -350,6 +359,18 @@ function isStopWord(word) {
     return stopwords.indexOf(word.toLowerCase()) > -1;
 }
 
+function min_word_score(){
+	var min_word_score = 99999999;
+	var words = Object.getOwnPropertyNames(word_scores);
+	for (var i=0; i<words.length; i++){
+		if(!isStopWord(words[i]) && word_scores[words[i]]<min_word_score){
+			min_word_score = word_scores[words[i]];
+			console.log("Min score:" +min_word_score);
+		}
+	}
+	return min_word_score;
+}
+
 //event handlers
 $('body').on('click', '.ui-icon-delete', function(){
 	if(! ($(this).parents().eq(3).hasClass("sense_div"))){
@@ -367,7 +388,7 @@ $('body').on('keyup', '.add-word-input', function (e) {
 	}
 });
 $('#to_abstract').on('click', function(){
-	console.log("scroll");
+	//console.log("scroll");
 	$('html, body').animate({
         scrollTop: $("#abstract").offset().top
     }, 1000);
