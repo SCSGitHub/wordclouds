@@ -148,6 +148,7 @@ function loadSenses(word_number){
   	var original_template = $("#word_sense_template").html();
 	var target = $("#left-menu").find(".ui-collapsible-content");
 	$(target[0]).html("");
+	var this_word = sentence[word_number];
 
 	try{
 		var senses = input_senses[word_number].senses;
@@ -163,6 +164,9 @@ function loadSenses(word_number){
 
 			for (var i=0; i<sense.synonym_list.length; i++){
 				synonym = sense.synonym_list[i];
+				if(synonym.word == this_word){
+					continue;
+				}
 				var new_word_li = $("#word_item_template").find("li");
 				var new_word_text = new_word_li.find(".word_text");
 				new_word_text.html(synonym.word);
@@ -170,6 +174,9 @@ function loadSenses(word_number){
 				new_word_li.attr("lemma",synonym.lemma);
 				var new_word = $(new_word_text).parent().parent().html();
 				$(sense_list).append(new_word);
+			}
+			if($(sense_list).find("li").length<1){
+				continue;
 			}
 			$(sense_div).attr("id", "sense_"+j+"");
 			$(sense_div).find("h4").html((j+1)+": \"" +sense.synonym_list[0].word +"\"");

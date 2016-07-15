@@ -52,7 +52,7 @@ def completed_cloud(request):
         #return JSONResponse(md5_hash, status=200)
         return render(request, 'wordclouds/completed_cloud.html', {'completion_code':md5_hash})
     else:
-        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':"not done with task"})
+        return render(request, 'wordclouds/completed_cloud.html', {'completion_code':"Not Available"})
 
 @csrf_exempt
 def cloud_training(request):
