@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
+import string
 
 class CompletionCode(models.Model):
     id = models.AutoField(primary_key=True)
@@ -35,9 +36,15 @@ class CompletionCode(models.Model):
         db_table = 'wc_completion_codes'
 
 class ProblemManager(models.Manager):
+    char_excl = [',','.','?','!', '(',')', '[', ']', '{', '}', '\\', '/', '"', ':' ,'&', '=', '+', '#', '$', '%', '^', '*', '<', '>', ';', '`', '~', '|']
+
     def get_problem_with_words(self, id):
         problem = self.get(id=id)
-        word_forms = problem.desc.split(" ")
+        #string.punctuation below also has '-' and '_', which is undesirable
+        punc_replace = problem.desc.maketrans({key: None for key in self.char_excl
+        })
+        clean_desc = problem.desc.translate(punc_replace)
+        word_forms = clean_desc.split(" ")
 
         #get lemma forms of words
         lemmatizer = WordNetLemmatizer()
