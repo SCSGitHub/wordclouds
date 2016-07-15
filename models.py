@@ -72,7 +72,7 @@ class Problem(models.Model):
         if max_item:
             return max_item['id__max']
         else:
-            return None
+            return 0
             
     @classmethod
     def get_new_id(cls):
