@@ -28,7 +28,9 @@ def index(request):
 
 def cloud(request):
     if "username" in request.session:
-        problem_id = Problem.get_new_id()
+        problem_id = ProblemAttempts.get_new_id()
+        problem_attempt = ProblemAttempts(problem_id=problem_id, user=request.session['username'], trial=request.session["trial"], start_date=datetime.now())
+        problem_attempt.save()
         request.session["problem_id"] = problem_id
         abstract = Problem.objects.get(id=problem_id).abstract
         if type(abstract) != str or len(abstract) < 1:
@@ -147,6 +149,9 @@ def submit(request):
             #save completion code data
             code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task= task_desc, submit_date=submit_date)
             code.save()
+            problem = Problem.objects.get(id=problem_id)
+            problem.completions = problem.completions + 1
+            problem.save()
 
             #store in session for next page
             request.session['completion_code'] = md5_hash

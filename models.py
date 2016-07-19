@@ -19,17 +19,6 @@ class CompletionCode(models.Model):
     def get_trial(cls, user):
         cnt = CompletionCode.objects.filter(user__contains=user).count()
         return cnt + 1
-        
-    @classmethod
-    def get_last_problem_id(cls):
-        try:
-            last_code = CompletionCode.objects.latest('submit_date')
-            if last_code.problem_id:
-                return last_code.problem_id
-            else:
-                return 0
-        except ObjectDoesNotExist:
-            return 0
     
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
@@ -76,15 +65,22 @@ class Problem(models.Model):
     
     id = models.IntegerField(primary_key=True)
     turk_id = models.CharField(max_length=45, blank=True, null=True)
-    paper_id = models.IntegerField(null=True)
+    #paper_id = models.IntegerField(null=True)
     abstract = models.TextField()
     #HIT1: Depending on the data recieved, this data type might change
     desc = models.CharField(max_length=255)
     user = models.CharField(max_length=100, blank=True, null=True)
     trial = models.IntegerField(null=True)
     type = models.CharField(max_length=20, blank=True, null=True)
+    completions = models.IntegerField(default=0)
     submit_date = models.DateTimeField(null=True)
     objects = ProblemManager()
+    
+    @classmethod
+    def reached_max_completions(cls, problem_id):
+        completions = Problem.objects.get(id=problem_id).completions
+        return completions >= 3
+        
     
     @classmethod
     def get_max_id(cls):
@@ -93,14 +89,6 @@ class Problem(models.Model):
             return max_item['id__max']
         else:
             return 0
-            
-    @classmethod
-    def get_new_id(cls):
-        problem_id = CompletionCode.get_last_problem_id()
-        if problem_id < cls.get_max_id():
-            return problem_id + 1
-        else:
-            return 1
             
     def __str__(self):
         return self.desc
@@ -116,6 +104,47 @@ class Problem(models.Model):
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems'
+        
+class ProblemAttempts(models.Model):
+    id = models.AutoField(primary_key=True)
+    problem = models.ForeignKey('Problem', verbose_name="source problem")
+    user = models.CharField(max_length=100, blank=True, null=True)
+    trial = models.IntegerField(null=True)
+    start_date = models.DateTimeField(null=True)
+    
+    @classmethod
+    def get_last_problem_id(cls):
+        try:
+            last_code = ProblemAttempts.objects.latest('start_date')
+            if last_code.problem_id:
+                return last_code.problem_id
+            else:
+                return 0
+        except ObjectDoesNotExist:
+            return 0
+    
+    @classmethod
+    def get_new_id(cls):
+        problem_id = cls.get_last_problem_id()
+        max_problem_id = Problem.get_max_id()
+        new_problem_id = problem_id + 1
+        if new_problem_id > max_problem_id:
+            new_problem_id = 1
+        
+        if not Problem.reached_max_completions(new_problem_id):      
+            return new_problem_id
+        else:
+            try:
+                aggregation = Problem.objects.all().values('id','completions').order_by('completions', 'id')[0]
+                return aggregation['id']
+            except (IndexError, TypeError) as e:
+                return new_problem_id            
+              
+    
+    class Meta:
+        managed = True #let migrations create the table if it doesn't exist
+        db_table = 'wc_problems_attempts'
+    
 
 class Synonym(models.Model):
     id = models.AutoField(primary_key=True)
