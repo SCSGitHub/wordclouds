@@ -4,7 +4,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
+from random import randint
 import string
+
+class ModelGlobals():
+    #the total number of cloud completions we want per problem
+    completions_threshold = 3
 
 class CompletionCode(models.Model):
     id = models.AutoField(primary_key=True)
@@ -79,7 +84,7 @@ class Problem(models.Model):
     @classmethod
     def reached_max_completions(cls, problem_id):
         completions = Problem.objects.get(id=problem_id).completions
-        return completions >= 3
+        return completions >= ModelGlobals.completions_threshold
         
     
     @classmethod
@@ -111,7 +116,7 @@ class ProblemAttempts(models.Model):
     user = models.CharField(max_length=100, blank=True, null=True)
     trial = models.IntegerField(null=True)
     start_date = models.DateTimeField(null=True)
-    
+
     @classmethod
     def get_last_problem_id(cls):
         try:
@@ -122,7 +127,7 @@ class ProblemAttempts(models.Model):
                 return 0
         except ObjectDoesNotExist:
             return 0
-    
+
     @classmethod
     def get_new_id(cls):
         problem_id = cls.get_last_problem_id()
@@ -130,17 +135,47 @@ class ProblemAttempts(models.Model):
         new_problem_id = problem_id + 1
         if new_problem_id > max_problem_id:
             new_problem_id = 1
-        
+
         if not Problem.reached_max_completions(new_problem_id):      
             return new_problem_id
         else:
-            try:
-                aggregation = Problem.objects.all().values('id','completions').order_by('completions', 'id')[0]
-                return aggregation['id']
-            except (IndexError, TypeError) as e:
-                return new_problem_id            
-              
-    
+            #return cls.__ordered_assigned_id(new_problem_id)
+            return cls.__randomly_assigned_id(new_problem_id)
+
+
+    #helper to get new id
+    @classmethod
+    def __ordered_assigned_id(cls, new_id):
+
+        try:
+            pool = Problem.objects.filter(completions__lt=ModelGlobals.completions_threshold).values('id','completions').order_by('id')
+
+            if len(pool) <= 0:
+                return new_id
+
+            #assign the first one
+            pick = pool[0]['id']
+            return pick
+        except (IndexError, TypeError) as e:
+            return new_id
+
+    @classmethod
+    def __randomly_assigned_id(cls, new_id):
+
+        try:
+            pool = Problem.objects.filter(completions__lt=ModelGlobals.completions_threshold).values('id','completions')
+
+            #we've met our global threshold. continue to evenly distribute problems
+            if len(pool) <= 0:
+                return randint(1, Problem.get_max_id())
+
+            #randomly pick an object for id
+            pick_index = randint(0, len(pool)-1)
+            pick = pool[pick_index]['id']
+            return pick
+        except (IndexError, TypeError) as e:
+            return new_id
+
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems_attempts'
