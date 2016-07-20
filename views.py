@@ -187,20 +187,22 @@ def user_feedback(request):
     if request.method == 'POST':
         logger.debug("user feedback:")
         logger.debug(request.POST["feedback_text"])
-
-        #POST data should be cleaned
-        feedback_data = {
-            'user': request.POST['username'],
-            'problem_id': request.POST['problem_id'],
-            'trial': request.POST['trial'],
-            'text': request.POST['feedback_text'],
-            'task': task_desc,
-            'submit_date': datetime.now()
-        }
-
-        #store feedback
-        fb = Feedback.objects.create(**feedback_data)
-        fb.save()
+        
+        feedback = request.POST['feedback_text'].strip()
+        
+        if feedback:
+            #POST data should be cleaned
+            feedback_data = {
+                'user': request.POST['username'],
+                'problem_id': request.POST['problem_id'],
+                'trial': request.POST['trial'],
+                'text': feedback,
+                'task': task_desc,
+                'submit_date': datetime.now()
+            }
+            #store feedback
+            fb = Feedback.objects.create(**feedback_data)
+            fb.save()
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
