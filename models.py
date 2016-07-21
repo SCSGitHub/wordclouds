@@ -19,12 +19,12 @@ class CompletionCode(models.Model):
     trial = models.IntegerField(null=True)
     task = models.CharField(max_length=20)
     submit_date = models.DateTimeField(null=True)
-    
+
     @classmethod
     def get_trial(cls, user):
         cnt = CompletionCode.objects.filter(user__contains=user).count()
         return cnt + 1
-    
+
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_completion_codes'
@@ -56,7 +56,7 @@ class ProblemManager(models.Manager):
         #get lemma forms of words
         lemmatizer = WordNetLemmatizer()
         lemmas = {form: lemmatizer.lemmatize(form) for form in word_forms}
-        
+
         problem.words = [WordSense(form, get_hypernyms=True) for form in word_forms]
         return problem
 
@@ -67,7 +67,7 @@ class Problem(models.Model):
         desc: string of the full problem description
         words: array of word sense objects in the order as they appear in desc
     """
-    
+
     id = models.IntegerField(primary_key=True)
     turk_id = models.CharField(max_length=45, blank=True, null=True)
     #paper_id = models.IntegerField(null=True)
@@ -80,13 +80,21 @@ class Problem(models.Model):
     completions = models.IntegerField(default=0)
     submit_date = models.DateTimeField(null=True)
     objects = ProblemManager()
-    
+
     @classmethod
-    def reached_max_completions(cls, problem_id):
+    def max_completions(cls):
+        return Problem.objects.all().aggregate(models.Max('completions'))['completions__max']
+
+    @classmethod
+    def min_completions(cls):
+        return Problem.objects.all().aggregate(models.Min('completions'))['completions__min']
+
+    @classmethod
+    def reached_defined_max_completions(cls, problem_id):
         completions = Problem.objects.get(id=problem_id).completions
         return completions >= ModelGlobals.completions_threshold
-        
-    
+
+
     @classmethod
     def get_max_id(cls):
         max_item = Problem.objects.all().aggregate(models.Max('id'))
@@ -94,7 +102,7 @@ class Problem(models.Model):
             return max_item['id__max']
         else:
             return 0
-            
+
     def __str__(self):
         return self.desc
 
@@ -105,11 +113,11 @@ class Problem(models.Model):
     """
     def __get_word_senses(self, word_forms):
         return [WordSense(form, get_hypernyms=True) for form in word_forms]
-        
+
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems'
-        
+
 class ProblemAttempts(models.Model):
     id = models.AutoField(primary_key=True)
     problem = models.ForeignKey('Problem', verbose_name="source problem")
@@ -136,7 +144,7 @@ class ProblemAttempts(models.Model):
         if new_problem_id > max_problem_id:
             new_problem_id = 1
 
-        if not Problem.reached_max_completions(new_problem_id):      
+        if not Problem.reached_defined_max_completions(new_problem_id):
             return new_problem_id
         else:
             #return cls.__ordered_assigned_id(new_problem_id)
@@ -161,9 +169,15 @@ class ProblemAttempts(models.Model):
 
     @classmethod
     def __randomly_assigned_id(cls, new_id):
+        max_completions = ModelGlobals.completions_threshold
+        min_completions = Problem.min_completions()
+
+        #attempt to retrieve an evenly distributed amount of completions
+        if min_completions >= max_completions:
+            max_completions = min_completions + 1
 
         try:
-            pool = Problem.objects.filter(completions__lt=ModelGlobals.completions_threshold).values('id','completions')
+            pool = Problem.objects.filter(completions__lt=max_completions).values('id','completions')
 
             #we've met our global threshold. continue to evenly distribute problems
             if len(pool) <= 0:
@@ -179,7 +193,7 @@ class ProblemAttempts(models.Model):
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems_attempts'
-    
+
 
 class Synonym(models.Model):
     id = models.AutoField(primary_key=True)
@@ -193,7 +207,7 @@ class Synonym(models.Model):
     user = models.CharField(max_length=100)
     trial = models.IntegerField(null=True)
     submit_date = models.DateTimeField(null=True)
-    
+
 
     def __str__(self):
         return self.word_form
@@ -231,7 +245,7 @@ class Synonym(models.Model):
 
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
-        db_table = 'wc_synonyms'    
+        db_table = 'wc_synonyms'
 
 class Word():
     """
