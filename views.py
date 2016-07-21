@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +10,7 @@ import hashlib, json, logging
 
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
-hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
+hash_key = getattr(settings, 'WORDCLOUDS_HASH_KEY', 'd41d8cd98f00b204e9800998ecf8427e')
 task_desc = 'word clouds'
 
 class JSONResponse(HttpResponse):
