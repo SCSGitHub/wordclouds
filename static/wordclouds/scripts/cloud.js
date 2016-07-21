@@ -307,7 +307,7 @@ function getSentenceFromInput(data){
 	for (s of sentence){
 		if(isStopWord(s)){realWords=realWords-1;}
 	}
-	min_score = realWords < 5 ? realWords * 8 : 40;
+	min_score = realWords < 5 ? realWords * 8 : min_score;
 	target_score = min_score;
 	full_sentence = data.desc;
 	return input_sentence;

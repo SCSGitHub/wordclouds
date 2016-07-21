@@ -7,8 +7,6 @@ from .models import *
 from .serializers import *
 import hashlib, json, logging
 
-from random import randint
-
 logger = logging.getLogger(__name__)
 logger.debug('Starting \'wordclouds\' app...')
 hash_key = 'd41d8cd98f00b204e9800998ecf8427e'
@@ -29,7 +27,13 @@ def index(request):
 def cloud(request):
     if "username" in request.session:
         problem_id = ProblemAttempts.get_new_id()
-        problem_attempt = ProblemAttempts(problem_id=problem_id, user=request.session['username'], trial=request.session["trial"], start_date=datetime.now())
+        problem_attempt = ProblemAttempts(
+            problem_id=problem_id,
+            session_key=request.session.session_key,
+            user=request.session['username'],
+            trial=request.session["trial"],
+            start_date=datetime.now()
+        )
         problem_attempt.save()
         request.session["problem_id"] = problem_id
         abstract = Problem.objects.get(id=problem_id).abstract
@@ -41,7 +45,6 @@ def cloud(request):
 
 @csrf_exempt
 def completed_cloud(request):
-    #my_hash = "333" #request.session['completion_code']
     template_vars = {
         'completion_code': "Not Available",
         'username': '',
@@ -49,19 +52,17 @@ def completed_cloud(request):
         'problem_id': 0
     }
     
-    if "done" in request.session and request.session["done"]==True :
+    if "completion_code" in request.session and len(request.session["completion_code"]) > 0 :
         template_vars['username'] = request.session.pop("username") #removes username
         template_vars['completion_code'] = request.session.pop("completion_code")
         template_vars['trial'] = request.session.pop("trial")
         template_vars['problem_id'] = request.session.pop("problem_id")
         
-        logger.debug("Completed by user {} with code {}".format(template_vars['username'], template_vars['completion_code']))
+        logger.debug("Completed by user {} with code {} on session {}".format(template_vars['username'], template_vars['completion_code'], request.session.session_key))
 
         #clear the session so that they have to restart
-        request.session["done"]=False
-        request.session["completion_code"]=None
+        request.session.flush()
 
-        #return JSONResponse(md5_hash, status=200)
         return render(request, 'wordclouds/completed_cloud.html', template_vars)
     else:
         return render(request, 'wordclouds/completed_cloud.html', template_vars)
@@ -69,11 +70,13 @@ def completed_cloud(request):
 @csrf_exempt
 def cloud_training(request):
     if "username" in request.session:
+        logger.debug('session key: {}'.format(request.session.session_key))
         return render(request, 'wordclouds/cloud_training.html')
     else:
         return redirect("wordclouds:username")
 
 def username(request):
+    request.session.flush()
     return render(request, 'wordclouds/username.html')
 
 def fetch_problem(request, problem_id):
@@ -127,7 +130,7 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        if "username" in request.session and 'done' in request.session:
+        if "username" in request.session:
             problem_id =  request.session['problem_id']
             username = request.session["username"]
             trial = request.session["trial"] if request.session['trial'] else 0
@@ -147,7 +150,15 @@ def submit(request):
             )
 
             #save completion code data
-            code = CompletionCode(code=md5_hash, user=username, problem_id=problem_id, trial=trial, task= task_desc, submit_date=submit_date)
+            code = CompletionCode(
+                code=md5_hash,
+                user=username,
+                problem_id=problem_id,
+                session_key=request.session.session_key,
+                trial=trial,
+                task= task_desc,
+                submit_date=submit_date
+            )
             code.save()
             problem = Problem.objects.get(id=problem_id)
             problem.completions = problem.completions + 1
@@ -160,8 +171,6 @@ def submit(request):
             logger.debug(post)
             logger.info("Hash created for {} ({}) at {}".format(username, md5_hash, request.session['completion_timestamp']))
 
-            request.session["done"] = True
-            #return JSONResponse(md5_hash, status=200)
             return HttpResponse("ok", status=200)
         else:
             return HttpResonse("No User", status=200)
@@ -173,10 +182,8 @@ def send_username(request):
         #validate
         username = request.POST["username"]
         request.session["username"] = username
-        request.session["done"]= False
 
         #check how many times this turker has completed the HIT
-        #for now, assign static value
         request.session["trial"] = CompletionCode.get_trial(username)
         logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
         return redirect("wordclouds:cloud_training")

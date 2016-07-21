@@ -13,6 +13,7 @@ class ModelGlobals():
 
 class CompletionCode(models.Model):
     id = models.AutoField(primary_key=True)
+    session_key = models.CharField(max_length=40, blank=True, null=True, default=None)
     code = models.CharField(max_length=64)
     user = models.CharField(max_length=100, blank=True, null=True)
     problem = models.ForeignKey('Problem', verbose_name="source problem")
@@ -121,6 +122,7 @@ class Problem(models.Model):
 class ProblemAttempts(models.Model):
     id = models.AutoField(primary_key=True)
     problem = models.ForeignKey('Problem', verbose_name="source problem")
+    session_key = models.CharField(max_length=40, blank=True, null=True, default=None)
     user = models.CharField(max_length=100, blank=True, null=True)
     trial = models.IntegerField(null=True)
     start_date = models.DateTimeField(null=True)
