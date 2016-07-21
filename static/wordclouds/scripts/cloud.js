@@ -33,9 +33,9 @@ var cloud = [];
 //global variables
 //var problem_id = 2;//getRandomInt(1,5); //get as an input
 var score = 0; 
-var min_score = 20;
+var min_score = 40;
 var target_score = 40;
-var min_per_word = 1;
+var min_per_word = 3;
 var completion_code = 0;
 
 //helper functions
@@ -303,6 +303,12 @@ function getSentenceFromInput(data){
 		input_sentence.words.push(word.surface_form);
 	}
 	sentence = input_sentence.words; //store just the word-strings in an array for easy access
+	var realWords = sentence.length;
+	for (s of sentence){
+		if(isStopWord(s)){realWords=realWords-1;}
+	}
+	min_score = realWords < 5 ? realWords * 8 : 40;
+	target_score = min_score;
 	full_sentence = data.desc;
 	return input_sentence;
 }
