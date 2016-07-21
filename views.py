@@ -58,7 +58,7 @@ def completed_cloud(request):
         template_vars['completion_code'] = request.session.pop("completion_code")
         template_vars['trial'] = request.session.pop("trial")
         template_vars['problem_id'] = request.session.pop("problem_id")
-        
+
         logger.debug("Completed by user {} with code {} on session {}".format(template_vars['username'], template_vars['completion_code'], request.session.session_key))
 
         #clear the session so that they have to restart
@@ -70,8 +70,10 @@ def completed_cloud(request):
 
 @csrf_exempt
 def cloud_training(request):
-    if "username" in request.session:
-        logger.debug('session key: {}'.format(request.session.session_key))
+    #skip training if this person has completed a problem before
+    if "trial" in request.session and request.session["trial"] > 1:
+        return redirect("wordclouds:cloud")
+    elif "username" in request.session:
         return render(request, 'wordclouds/cloud_training.html')
     else:
         return redirect("wordclouds:username")
@@ -85,7 +87,7 @@ def fetch_problem(request, problem_id):
         problem_id = int(problem_id)
     except:
         return HttpResponse(status=400)
-        
+
     if request.method == 'GET' and problem_id > 0:
         #create problem object
         problem = Problem.objects.get_problem_with_words(problem_id)
@@ -131,7 +133,7 @@ Validate and store POST data
 @csrf_exempt
 def submit(request):
     if request.method == 'POST':
-        if "username" in request.session:
+        if "username" in request.session and "cloud_data" in request.POST:
             problem_id =  request.session['problem_id']
             username = request.session["username"]
             trial = request.session["trial"] if request.session['trial'] else 0
@@ -187,7 +189,12 @@ def send_username(request):
         #check how many times this turker has completed the HIT
         request.session["trial"] = CompletionCode.get_trial(username)
         logger.info("Username: {} Trial: {}".format(username, request.session["trial"]))
-        return redirect("wordclouds:cloud_training")
+
+        #skip training if this person has completed a problem before
+        if request.session["trial"] > 1:
+            return redirect("wordclouds:cloud")
+        else:
+            return redirect("wordclouds:cloud_training")
     else:
         return HttpResponse(status=400)
 
@@ -195,9 +202,9 @@ def user_feedback(request):
     if request.method == 'POST':
         logger.debug("user feedback:")
         logger.debug(request.POST["feedback_text"])
-        
+
         feedback = request.POST['feedback_text'].strip()
-        
+
         if feedback:
             #POST data should be cleaned
             feedback_data = {
