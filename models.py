@@ -275,7 +275,10 @@ class Word():
                 self.lemma = search_form
                 self.surface_form = surface_form
             elif type(surface_form) is str and len(surface_form) > 0:
-                self.lemma = WordNetLemmatizer().lemmatize(surface_form, self.pos)
+                if surface_form in ['assess']:
+                    self.lemma=surface_form
+                else:
+                    self.lemma = WordNetLemmatizer().lemmatize(surface_form, self.pos)
                 self.surface_form = surface_form
             else:
                 self.lemma = self.brothers[0]
@@ -285,7 +288,10 @@ class Word():
                 self.__set_all_hypernyms(synset)
         else:
             self.surface_form = surface_form
-            self.lemma = WordNetLemmatizer().lemmatize(surface_form)
+            if surface_form in ['assess']:
+                self.lemma=surface_form
+            else:
+                self.lemma = WordNetLemmatizer().lemmatize(surface_form)
             self.sense = None
             self.pos = None
             self.sense_number = None
@@ -308,8 +314,11 @@ class WordSense():
         lemmatizer = WordNetLemmatizer()
         lemma = lemmatizer.lemmatize(surface_form)
         self.surface_form = surface_form
-        self.search_form = lemma
-        self.__set_senses(lemma, get_hypernyms)
+        if surface_form == 'assess':
+            self.search_form = surface_form
+        else:
+            self.search_form = lemma
+        self.__set_senses(self.search_form, get_hypernyms)
 
     def __set_senses(self, lemma, get_hypernyms):
         synsets = wordnet.synsets(lemma)
