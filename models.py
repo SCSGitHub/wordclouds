@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, connection
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
 from random import randint
@@ -195,6 +195,24 @@ class ProblemAttempts(models.Model):
     class Meta:
         managed = True #let migrations create the table if it doesn't exist
         db_table = 'wc_problems_attempts'
+
+class ProblemSynonyms():
+
+    words = []
+
+    def __init__(self):
+        #words_list_raw = Synonyms.objects.raw('SELECT problem_id, words FROM wc_v_words_per_problem')
+        cursor = connection.cursor()
+        cursor.execute('SELECT wp.id AS problem_id, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id')
+        rows = cursor.fetchall()
+        for row in rows:
+            if type(row[1]) is str:
+                self.words.append(row[1].split("|"))
+            else:
+                self.words.append([])
+
+    def get_words(self):
+        return self.words
 
 
 class Synonym(models.Model):
