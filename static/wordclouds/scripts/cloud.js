@@ -80,6 +80,10 @@ function loadSentence(){
 	var original_template = $("#word_sentence_template").html();
 	$("#sentence_text").html("\""+full_sentence+"\"");
 
+	//word scores:
+	min_score = sentence.length > 5 ? 40 : 8*sentence.length;
+	target_score = min_score;
+
 	for (var i = 0; i<sentence.length; i++){
 		var word_of_sentence = sentence[i];
 		word_scores[word_of_sentence]=0;

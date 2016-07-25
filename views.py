@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
+import os.path
 from .models import *
 from .serializers import *
 import hashlib, json, logging
@@ -73,6 +74,9 @@ def cloud_training(request):
 
 def username(request):
     return render(request, 'wordclouds/username.html')
+
+def results(request):   
+    return render(request, 'wordclouds/results.html')
 
 def fetch_problem(request, problem_id):
     try:
@@ -197,5 +201,13 @@ def user_feedback(request):
         fb = Feedback.objects.create(**feedback_data)
         fb.save()
         return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)
+
+def tfidf(request):
+    if request.method == 'GET':
+        bow = request.bow
+        scores = '{"0": 0.85,"1": 0.33}' #{paper_id : score, paper_id : score };
+        return HttpResponse(scores, status=200)
     else:
         return HttpResponse(status=400)

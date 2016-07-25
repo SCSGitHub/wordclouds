@@ -277,3 +277,15 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
     margin: 1em;
     width: 40%;
 }*/
+
+.rain_btn{
+	margin-top:20px;
+	padding:10px;
+	border-radius: 5px;
+	border:solid 3px #ccc;
+	background-color:#054e88;
+	color:white;
+}
+.rain_btn:hover{
+	background-color: #021644;
+}
