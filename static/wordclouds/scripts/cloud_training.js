@@ -238,7 +238,6 @@ function getSentence(){
 
 function getSynonyms(){
 	var url = 'http://scsweb-d11.andrew.cmu.edu:81/wordclouds/synonyms/entropy.n.02';
-
 	$.get(url, function(data){
 		entropy_response = data;
 	});

@@ -30,4 +30,6 @@ urlpatterns = [
     url(r'^synonyms/(?P<word>[\w\d._-]+)?$', views.fetch_synonyms, name='synonyms'),
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
     url(r'^word_senses/(?P<word>[\w\d._-]+)?$', views.fetch_word_senses, name='word_senses'),
+    url(r'^results/?$', views.results, name='results'),
+    url(r'^tfidf/?$', views.tfidf, name='tfidf'),
 ]
