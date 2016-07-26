@@ -1,4 +1,4 @@
-var data = data2;
+var data = data3;
 
 var myPaper = {};
 var connection_scores = {};
@@ -28,7 +28,6 @@ $(document).ready(function(){
 	$("#problems_by_top_score").html(problems_by_top_score);
 	myPaper = copy({}, data[0]);
 	myCustomPaper = copy({}, myPaper);
-
 });
 
 function addWordsOfSentence(myPaper){
