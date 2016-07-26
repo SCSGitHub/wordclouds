@@ -16,7 +16,8 @@
 	<script src="{% static 'wordclouds/scripts/data3.js' %}"></script>
 
 	<script> 
-		var url_tfidf = "{% url 'wordclouds:tfidf_query' %}";
+		var url_tfidf = "{% url 'wordclouds:similarity_query' %}tfidf";
+		var url_lsi = "{% url 'wordclouds:similarity_query' %}lsi";
 	</script>
 
 </head>
