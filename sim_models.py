@@ -35,7 +35,7 @@ class TfIdf():
 
 class LSI():
 
-    def __init__(self, problems):
+    def __init__(self, problems, num_topics):
 
         #this dictionary lists each unique word with its word_id 
         self.dictionary = corpora.Dictionary(problems) #eg {'an': 0, 'many': 1}
@@ -43,9 +43,12 @@ class LSI():
         #corpus is a list of vectors, each representing the frequency of each word [by id] in a problem
         self.corpus = [self.dictionary.doc2bow(problem) for problem in problems]
 
-        #LSA with 200 dimensions is reasonable naive starting point. may want to allow for variable parameters in future, but this should be good for now.
+        #preprocess with tfidf
+        self.tfidf_model = models.TfidfModel(self.corpus)
+        corpus_tfidf = self.tfidf_model[self.corpus]
+
         #generate the lsi index, which will be queried against input vectors
-        self.lsi_model = models.lsimodel.LsiModel(corpus=self.corpus, id2word=self.dictionary, num_topics=200)
+        self.lsi_model = models.lsimodel.LsiModel(corpus=corpus_tfidf, id2word=self.dictionary, num_topics=num_topics)
         corpus_lsi = self.lsi_model[self.corpus]
         self.index = similarities.MatrixSimilarity(corpus_lsi)
 
