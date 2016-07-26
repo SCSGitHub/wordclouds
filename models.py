@@ -203,10 +203,9 @@ class ProblemSynonyms():
     This class is used to get an aggregate list of synonmys per problem_id
     """
 
-    words = []
-
     def __init__(self):
         #words_list_raw = Synonyms.objects.raw('SELECT problem_id, words FROM wc_v_words_per_problem')
+        self.words = []
         cursor = connection.cursor()
         cursor.execute('SELECT wp.turk_id AS `id`, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id')
         rows = cursor.fetchall()
@@ -215,7 +214,7 @@ class ProblemSynonyms():
                 self.words.append(row[1].split("|"))
             else:
                 self.words.append([])
-
+        cursor.close()
     def get_words_list(self):
         return self.words
 
