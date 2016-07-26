@@ -1,5 +1,3 @@
-//input:
-
 var data = data2;
 
 var myPaper = {};
@@ -8,6 +6,8 @@ var highest_score = 0;
 var myCustomPaper = {};
 var score_mode = "dumbo";
 var tfidf_scores = {};
+var lsi_scores = {};
+var lsi_dimensions = 100;
 
 $(document).ready(function(){
 	//find all the connections for all papers (is it expensive?)
@@ -55,7 +55,12 @@ function addWordsOfSentence(myPaper){
 
 function changeScoringFunction(me){
 	score_mode = me.value;
-	console.log("score mode: "+score_mode);
+	(score_mode=="lsi") ? $("#lsi_dimensions_input").show() : $("#lsi_dimensions_input").hide()
+	//console.log("score mode: "+score_mode);
+}
+function changeLsiDimensions(me){
+	lsi_dimensions = me.value;
+	if(isNaN(lsi_dimensions) || lsi_dimensions<1) {lsi_dimensions = 100; }
 }
 
 function changeProblem(me){
@@ -100,14 +105,19 @@ function getSimilarPapers(thisPaper){
 	}
 
 	//tfidf scores
+	if(score_mode=="tfidf"){
 	//tfidf_scores = score_tfidf(); //{paper_id:score, paper_id: score}
+	}else if(score_mode=="lsi_scores"){
+	//lsi_scores = score_lsi(); //{paper_id:score, paper_id: sc
+	}
 
 	//find overlapping synonyms
 	mylist = mylist.sort();
 	for(var i=0; i<data.length; i++){
 		var theirPaper = data[i];
-		if (theirPaper.id == thisPaper.id){ continue; } //is my paper?
+		if (theirPaper.id == thisPaper.id){ continue; } //is this my paper?
 
+		//remove papers which contain any words the user has "forbidden" in the extraction
 		var forbidden = false;
 		for (f_word of forbidden_words){ //contains forbidden word?
 			if(theirPaper.extraction.indexOf(f_word) > -1){ 
@@ -117,7 +127,7 @@ function getSimilarPapers(thisPaper){
 		}
 		if(forbidden){continue;}
 
-		//how many synonyms does it have in common?
+		//get the overlapping synonyms
 		var overlap = [];
 		var j=0, overlap_count = 0, syn_count = 0;
 		for (term of theirPaper.terms){
@@ -130,37 +140,53 @@ function getSimilarPapers(thisPaper){
 			syn_count += theirlist.length; 
 		}
 
+		//score the paper's relevance depending on the scoring mode
 		var score = 0;
 		switch(score_mode){
-			case "dumbo":
+			case "dumbo": //count the overlapping words and normalize: intersection/union
 				score = overlap_count/(mylist.length + syn_count - overlap_count);
 				break;
-			case "tfidf":
-				score = tfidf_scores[theirPaper];
+			case "tfidf": //see tfidf scoring method in views.py
+				score = tfidf_scores[theirPaper.id];
+				break;
+			case "lsi": //see lsi scoring method in views.py
+				score = lsi_scores[theirPaper.id];
 				break;
 			default:
 				score = 1; 
 		}
-		score = Math.round(score * 1000) / 1000;
-		if(score>highest_score){ highest_score = score; }
+		score = score.toFixed(3);
+		if(score>highest_score){ highest_score = score; } //what is the "best match" score for this paper?
 		results.push([theirPaper,overlap,score]);
 	}
 
 	results.sort(function(a, b) {
-        return b[2] - a[2];
+        return b[2] - a[2]; //sort by score
     });
     return results;
 }
 
 function score_tfidf(){
-	var bow = [];
+	var bow = []; //custom word cloud the user has made, like: ["array", "of", "strings"]
 	for (term of myCustomPaper.terms){
 		for (synonym of term.synonyms){bow.push(synonym.synonym);}
 	}
 	console.log(JSON.stringify(bow));
-	//bow is the custom cloud words as ["array", "of", "strings"]
 	$.get(url_tfidf, {query:JSON.stringify(bow)}, function(data){
 		tfidf_scores = JSON.parse(data);
+	});
+}
+
+function score_lsi(){
+	var bow = []; //custom word cloud the user has made, like: ["array", "of", "strings"]
+	for (term of myCustomPaper.terms){
+		for (synonym of term.synonyms){bow.push(synonym.synonym);}
+	}
+	console.log(JSON.stringify(bow));
+	//also pass the lsi scoring function a parameter with the number of dimensions desired
+	$.get(url_lsi, {query:JSON.stringify(bow), dimensions:lsi_dimensions.toString()}, 
+		function(data){
+			lsi_scores = JSON.parse(data);
 	});
 }
 
@@ -267,7 +293,6 @@ function lightning(){
 			}, 200);
 		}, 100);
 	}, 100);
-
 }
 
 $("body").on("change", ".check", function(){
@@ -335,12 +360,12 @@ $("#update_related_papers_button").on("click", function(){
 });
 
 $("#forbidden_words").keydown(function(e){
-	    if (e.keyCode === 13) {
-	    	console.log("blur");
-	    	$(e.target).blur();
-	    	updateRelatedPapers();
-	    	return false;
-	    }
+	if (e.keyCode === 13) {
+		console.log("blur");
+		$(e.target).blur();
+		updateRelatedPapers();
+		return false;
+	}
 });
 
 $("#toggle_options").click(function(){
@@ -351,7 +376,7 @@ $("#problems_by_top_score_btn").click(function(){
 	$("#problems_by_top_score").toggle();
 });
 
-$("body").on("click", ".collapse_btn", function(me){
+$("body").on("click", "#toggle_abstract", function(me){
 	$(me.target).parent().find(".more_info").toggle();
 });
 

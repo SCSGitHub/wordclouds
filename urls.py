@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^word/(?P<word>[\w\d._-]+)?$', views.fetch_word, name='word'),
     url(r'^word_senses/(?P<word>[\w\d._-]+)?$', views.fetch_word_senses, name='word_senses'),
     url(r'^results/?$', views.results, name='results'),
-    url(r'^tfidf/?$', views.tfidf, name='tfidf'),
+    url(r'^tfidf_query/?$', views.tfidf_query, name='tfidf_query'),
+    url(r'^lsi_query/?$', views.lsi_query, name='lsi_query'),
 ]
