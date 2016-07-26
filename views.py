@@ -202,19 +202,28 @@ def send_username(request):
     else:
         return HttpResponse(status=400)
 
-def tfidf_query(request):
+def similarity_query(request, method):
     if request.method == 'GET':
-        logger.debug("query string: {}".format(request.GET['query']))
+
+        logger.debug("Query string: {}".format(request.GET['query']))
         query = json.loads(request.GET['query'])
-        logger.debug("TF-IDF query: {}".format(query))
+        logger.debug("Query list: {}".format(query))
         corpus_object = ProblemSynonyms()
         corpus_list = corpus_object.get_words_list()
         logger.debug("Length of Problem Synonyms: {}".format(len(corpus_list)))
-        tfidf_model = TfIdf(corpus_list)
-        logger.debug("TF-IDF model object: {}".format(tfidf_model))
-        tfidf_results = tfidf_model.query_dict(query)
-        logger.debug("Length of TF-IDF sim. results : {}".format(len(tfidf_results)))
-        return JSONResponse(tfidf_results)
+
+        if method == 'lsi':
+            model_label = "LSI"
+            lsi_dimensions = int(request.GET['lsi_dimensions'])
+            similarity_model = LSI(corpus_list, lsi_dimensions)
+        else:
+            model_label = "TF-IDF"
+            similarity_model = TfIdf(corpus_list)
+
+        logger.debug("{} model object: {}".format(model_label, similarity_model))
+        similarity_results = similarity_model.query_dict(query)
+        logger.debug("Length of {} similarity results : {}".format(model_label, len(similarity_results)))
+        return JSONResponse(similarity_results)
     else:
         return HttpResponse(status=400)
 
@@ -239,13 +248,5 @@ def user_feedback(request):
             fb = Feedback.objects.create(**feedback_data)
             fb.save()
         return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
-
-def lsi_query(request):
-    if request.method == 'GET':
-        bow = request.json
-        scores = '{"0": 0.85,"1": 0.33}' #{paper_id : score, paper_id : score };
-        return HttpResponse(scores, status=200)
     else:
         return HttpResponse(status=400)

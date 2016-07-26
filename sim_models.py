@@ -58,11 +58,11 @@ class LSI():
         self.corpus = [self.dictionary.doc2bow(problem) for problem in problems]
 
         #preprocess with tfidf
-        self.tfidf_model = models.TfidfModel(self.corpus)
+        self.tfidf_model = gensim_models.TfidfModel(self.corpus)
         corpus_tfidf = self.tfidf_model[self.corpus]
 
         #generate the lsi index, which will be queried against input vectors
-        self.lsi_model = models.lsimodel.LsiModel(corpus=corpus_tfidf, id2word=self.dictionary, num_topics=num_topics)
+        self.lsi_model = gensim_models.lsimodel.LsiModel(corpus=corpus_tfidf, id2word=self.dictionary, num_topics=num_topics)
         corpus_lsi = self.lsi_model[self.corpus]
         self.index = similarities.MatrixSimilarity(corpus_lsi)
 
@@ -74,3 +74,14 @@ class LSI():
 
         #sims is a sorted list (highest to lowest) of the vectors which
         return sims
+
+    def query_dict(self, problem):
+        results = self.query(problem)
+        results_dict = {}
+
+        #convert to dict with turk_id's as the keys
+        for result in results:
+            problem = Problem.objects.get(id=result[0]+1)
+            results_dict[problem.turk_id] = result[1]
+
+        return results_dict

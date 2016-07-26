@@ -106,9 +106,9 @@ function getSimilarPapers(thisPaper){
 
 	//tfidf scores
 	if(score_mode=="tfidf"){
-		tfidf_scores = score_tfidf(); //{paper_id:score, paper_id: score}
+		score_tfidf(); //{paper_id:score, paper_id: score}
 	}else if(score_mode=="lsi_scores"){
-		lsi_scores = score_lsi(); //{paper_id:score, paper_id: sc
+		score_lsi(); //{paper_id:score, paper_id: sc
 	}
 
 	//find overlapping synonyms
@@ -181,8 +181,6 @@ function score_tfidf(){
 			tfidf_scores = data;
 		}
 	});
-}
-
 }
 
 function score_lsi(){
