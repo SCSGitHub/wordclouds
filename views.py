@@ -212,7 +212,7 @@ def tfidf_query(request):
         logger.debug("Length of Problem Synonyms: {}".format(len(corpus_list)))
         tfidf_model = TfIdf(corpus_list)
         logger.debug("TF-IDF model object: {}".format(tfidf_model))
-        tfidf_results = tfidf_model.query(query)
+        tfidf_results = tfidf_model.query_dict(query)
         logger.debug("Length of TF-IDF sim. results : {}".format(len(tfidf_results)))
         return JSONResponse(tfidf_results)
     else:

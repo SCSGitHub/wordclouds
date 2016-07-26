@@ -31,7 +31,7 @@ class TfIdf():
         vec_tfidf = self.tfidf_model[input_vector]
         sims = self.index[vec_tfidf]
         sims = sorted(enumerate(sims), key=lambda item: -item[1]) #[(1, 0.95783591), (3, 0.17758316),...]
-        sims = dict(sims)
+        #sims = dict(sims)
 
         #sims is a sorted list (highest to lowest) of the vectors which
         return sims
