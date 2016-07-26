@@ -106,9 +106,9 @@ function getSimilarPapers(thisPaper){
 
 	//tfidf scores
 	if(score_mode=="tfidf"){
-	//tfidf_scores = score_tfidf(); //{paper_id:score, paper_id: score}
+		tfidf_scores = score_tfidf(); //{paper_id:score, paper_id: score}
 	}else if(score_mode=="lsi_scores"){
-	//lsi_scores = score_lsi(); //{paper_id:score, paper_id: sc
+		lsi_scores = score_lsi(); //{paper_id:score, paper_id: sc
 	}
 
 	//find overlapping synonyms
@@ -147,10 +147,10 @@ function getSimilarPapers(thisPaper){
 				score = overlap_count/(mylist.length + syn_count - overlap_count);
 				break;
 			case "tfidf": //see tfidf scoring method in views.py
-				score = tfidf_scores[theirPaper.id];
+				score = tfidf_scores[theirPaper.id]? tfidf_scores[theirPaper.id] : 0;
 				break;
 			case "lsi": //see lsi scoring method in views.py
-				score = lsi_scores[theirPaper.id];
+				score = lsi_scores[theirPaper.id]? lsi_scores[theirPaper.id] : 0;
 				break;
 			default:
 				score = 1; 
@@ -172,9 +172,17 @@ function score_tfidf(){
 		for (synonym of term.synonyms){bow.push(synonym.synonym);}
 	}
 	console.log(JSON.stringify(bow));
-	$.get(url_tfidf, {query:JSON.stringify(bow)}, function(data){
-		tfidf_scores = JSON.parse(data);
+	$.ajax({
+		async: false,
+		type: 'GET',
+		url: url_tfidf,
+		data: {query:JSON.stringify(bow)}, 
+		success: function(data){
+			tfidf_scores = data;
+		}
 	});
+}
+
 }
 
 function score_lsi(){
@@ -184,9 +192,14 @@ function score_lsi(){
 	}
 	console.log(JSON.stringify(bow));
 	//also pass the lsi scoring function a parameter with the number of dimensions desired
-	$.get(url_lsi, {query:JSON.stringify(bow), dimensions:lsi_dimensions.toString()}, 
-		function(data){
-			lsi_scores = JSON.parse(data);
+	$.ajax({
+		async: false,
+		type: 'GET',
+		url: url_lsi,
+		data: {query:JSON.stringify(bow), dimensions:lsi_dimensions.toString()}, 
+		success: function(data){
+			lsi_scores = data;
+		}
 	});
 }
 
