@@ -228,7 +228,7 @@ def user_feedback(request):
 
 def tfidf(request):
     if request.method == 'GET':
-        bow = request.bow
+        bow = request.json
         scores = '{"0": 0.85,"1": 0.33}' #{paper_id : score, paper_id : score };
         return HttpResponse(scores, status=200)
     else:

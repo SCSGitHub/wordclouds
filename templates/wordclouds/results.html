@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" style="height:100%">
+<head>
+	<meta charset="utf-8">
+	<title>Thunderclouds</title>
+
+	{% load staticfiles %}
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
+
+	<!-- <script src="{% static 'wordclouds/scripts/data1.js' %}"></script> -->
+	<script src="{% static 'wordclouds/scripts/data2.js' %}"></script>
+
+	<script> 
+		var url_tfidf = "{% url 'wordclouds:tfidf' %}";
+	</script>
+
+</head>
+<body style="background-color:rgb(0, 136, 187); height:100%; width:100%; padding:15px;">
+
+	<h1 style="color:#eee; font-weight:200; font-size:40px">Making it Rain: where the clouds collide</h1>
+	<select id="dropdown"  onchange = "changeProblem(this)" style="max-width:90vw;">
+		<option>Select a problem</option>
+	</select>
+
+	<h4>Problem Statement:</h4>
+	<div id=problem style="color:#eee; font-size:1.7em;">Select a problem</div>
+
+	<button class="button collapse_btn" style="margin:2px">Toggle Abstract</button><br>
+	<div class="more_info" style="display:none">
+		<div id="my_abstract" style="color:#eee; max-width:80vw;">Select a problem</div>
+	</div>
+
+	<img id="lightning" src="http://i488.photobucket.com/albums/rr250/KimiVengenz/Textures/Lightning-psd7258.png" style="position:fixed; width:100vw; top:0; display:none">
+
+	<button class="rain_btn" id="toggle_options">Toggle Customization Pane</button>
+	<div id="options" style="display:none;	background-color:#054e88; border-radius: 10px 10px 10px 10px; color:white; padding:10px">
+		Scoring function: 
+		<select id="scoring_function" onchange = "changeScoringFunction(this)">
+			<option value="dumbo">Dumb matching</option>
+			<option value="tfidf">tf-idf</option>
+		</select>
+
+		<div id="customize">
+			<ol id="sentence_list">
+			</ol>
+		</div>
+		<div style="left:20vw;"><h4>Forbidden words in problem extraction (use, commas, like, this)</h4>
+			<div id="forbidden_words" style="padding:10px; border-radius: 5px; background-color:#eee; color:black; width:50vw" contenteditable="true"></div>
+		</div>
+		<button class="rain_btn center" value="go" id="update_related_papers_button">Perform Rain Dance</button>
+	</div>
+
+	<h2> Thunder rolls and lightning strikes.... </h2>
+
+	<div id="related_papers" style="border: solid 4px black; border-radius:5px; width: 90vw; margin:10px; max-height:80vh; overflow:auto" class="center"> 
+	 	Select a problem to see related papers
+	</div>
+
+	<br><br>
+	<button class="button" id="problems_by_top_score_btn" style="margin:2px">List problems by top score (toggle)</button><br>
+	<div id="problems_by_top_score" style="background-color:#eee; border-radius:5px; padding:10px; max-width:95vw; display:none"></div>
+
+	<div id="paper_template" style="display:none">
+		<div class="paper" style="background:white; color:#28E; margin: 10px; padding:10px; border-radius:5px">
+				<h3 style="margin:2px 0">Paper Extraction</h3>
+				<div class="score" style="color:#F39"></div>
+				Overlapping synonyms: <div class="synonyms" style="color:#283">Synonym, and, or, others</div>
+				<button class="button collapse_btn" style="margin:2px">toggle more info</button>
+				<div class="more_info" style="display:none">
+					ID: <div class="paper_id" style="color:black"></div>
+					Abstract: <div class="abstract" style="color:black"></div>
+				</div>
+		</div>
+	</div>
+	<div id="word_table_template" style="display:none">
+		<li class="clear" style="list-style: none;" word=""> 
+			<div style="float:left; width:100px" class="t_word"> Sample 1 </div>
+			<div style="float:left; margin-right:10px">
+				Nouns <br>
+				<input type="checkbox" class="check na_check" checked="true">Abstract<br>
+				<input type="checkbox" class="check nc_check" checked="true">Concrete 
+			</div>
+			<div style="float:left">
+				Verbs/other <br>
+				<input type="checkbox" class="check va_check" checked="true">Abstract<br>
+				<input type="checkbox" class="check vc_check" checked="true">Concrete 
+			</div>
+			<div style="float:left; margin:0 15px 15px 15px; padding:5px; border-radius: 5px; color:black; background-color:#eee; width:50vw" class="edit" contenteditable="true"></div>
+			<br style="clear: both"><br>
+		</li>
+	</div>
+
+	<script src="{% static 'wordclouds/scripts/results.js' %}"></script>
+
+</body>
+</html>
