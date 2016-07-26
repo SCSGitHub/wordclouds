@@ -238,3 +238,11 @@ def user_feedback(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
+
+def lsi_query(request):
+    if request.method == 'GET':
+        bow = request.json
+        scores = '{"0": 0.85,"1": 0.33}' #{paper_id : score, paper_id : score };
+        return HttpResponse(scores, status=200)
+    else:
+        return HttpResponse(status=400)
