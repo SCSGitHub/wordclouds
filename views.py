@@ -4,9 +4,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-import os.path
 from .models import *
 from .serializers import *
+from .sim_models import *
 import hashlib, json, logging
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def completed_cloud(request):
         'trial': 0,
         'problem_id': 0
     }
-    
+
     if "completion_code" in request.session and len(request.session["completion_code"]) > 0 :
         template_vars['username'] = request.session.pop("username") #removes username
         template_vars['completion_code'] = request.session.pop("completion_code")
@@ -82,9 +82,6 @@ def cloud_training(request):
 def username(request):
     request.session.flush()
     return render(request, 'wordclouds/username.html')
-
-def results(request):   
-    return render(request, 'wordclouds/results.html')
 
 def fetch_problem(request, problem_id):
     try:
@@ -129,6 +126,9 @@ def fetch_word_senses(request, word=''):
         return JSONResponse(WordSenseSerializer(word_obj).data)
     else:
         return HttpResponse(status=400)
+
+def results(request):
+    return render(request, 'wordclouds/results.html')
 
 """
 Validate and store POST data
@@ -202,6 +202,19 @@ def send_username(request):
     else:
         return HttpResponse(status=400)
 
+def tfidf_query(request):
+    if request.method == 'GET':
+        logger.debug("query string: {}".format(request.GET['query']))
+        query = json.loads(request.GET['query'])
+        logger.debug("TF-IDF query: {}".format(query))
+        corpus_object = ProblemSynonyms()
+        corpus_list = corpus_object.get_words_list()
+        tfidf_model = TfIdf(corpus_list)
+        results = tfidf_model.query_dict(query)
+        return JSONResponse(results)
+    else:
+        return HttpResponse(status=400)
+
 def user_feedback(request):
     if request.method == 'POST':
         logger.debug("user feedback:")
@@ -223,13 +236,5 @@ def user_feedback(request):
             fb = Feedback.objects.create(**feedback_data)
             fb.save()
         return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
-
-def tfidf(request):
-    if request.method == 'GET':
-        bow = request.json
-        scores = '{"0": 0.85,"1": 0.33}' #{paper_id : score, paper_id : score };
-        return HttpResponse(scores, status=200)
     else:
         return HttpResponse(status=400)

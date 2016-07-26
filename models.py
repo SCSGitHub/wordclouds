@@ -197,13 +197,18 @@ class ProblemAttempts(models.Model):
         db_table = 'wc_problems_attempts'
 
 class ProblemSynonyms():
+    
+    """
+    RB 07/26/2016
+    This class is used to get an aggregate list of synonmys per problem_id
+    """
 
     words = []
 
     def __init__(self):
         #words_list_raw = Synonyms.objects.raw('SELECT problem_id, words FROM wc_v_words_per_problem')
         cursor = connection.cursor()
-        cursor.execute('SELECT wp.id AS problem_id, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id')
+        cursor.execute('SELECT wp.turk_id AS `id`, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id')
         rows = cursor.fetchall()
         for row in rows:
             if type(row[1]) is str:
@@ -211,7 +216,7 @@ class ProblemSynonyms():
             else:
                 self.words.append([])
 
-    def get_words(self):
+    def get_words_list(self):
         return self.words
 
 
