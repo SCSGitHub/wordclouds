@@ -210,7 +210,7 @@ def tfidf_query(request):
         corpus_object = ProblemSynonyms()
         corpus_list = corpus_object.get_words_list()
         tfidf_model = TfIdf(corpus_list)
-        results = tfidf_model.query_dict(query)
+        results = tfidf_model.query(query)
         return JSONResponse(results)
     else:
         return HttpResponse(status=400)
