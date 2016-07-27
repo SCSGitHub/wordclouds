@@ -242,7 +242,7 @@ function newTextSynonyms(text, word){
 	});
 	var thisTerm = myCustomPaper.terms.find(function(a){return a.term==word})
 	thisTerm.synonyms = newSynonyms;
-	updateRelatedPapers();
+	//updateRelatedPapers();
 }
 
 function updateRelatedPapers(){
@@ -351,12 +351,7 @@ $("body").on("change", ".check", function(){
 	//update myCustomPaper
 	var thisTerm = myCustomPaper.terms.find(function(a){return a.term==thisWord})
 	thisTerm.synonyms = keepSynonyms;
-	//update related papers
-	$("#related_papers").html("");
-	var similarPapers = getSimilarPapers(myCustomPaper);
-	for (paper_and_overlap of similarPapers){
-		addPaper(paper_and_overlap);
-	}
+	//updateRelatedPapers();
 });
 
 $("body").on("blur", ".edit", function(){
@@ -386,9 +381,14 @@ $("#problems_by_top_score_btn").click(function(){
 	$("#problems_by_top_score").toggle();
 });
 
-$("body").on("click", "#toggle_abstract", function(me){
+$("body").on("click", "#toggle_abstract", function(){
+	$("#my_abstract").toggle();
+});
+
+$("body").on("click", ".more_info_btn", function(me){
 	$(me.target).parent().find(".more_info").toggle();
 });
+
 
 $("#scoring_function").change( function(a){
 
