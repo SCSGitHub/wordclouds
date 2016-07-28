@@ -178,9 +178,9 @@ def submit(request):
             logger.debug(post)
             logger.info("Hash created for {} ({}) at {}".format(username, md5_hash, request.session['completion_timestamp']))
 
-            return HttpResponse("ok", status=200)
+            return redirect("wordclouds:completed_cloud")
         else:
-            return HttpResonse("No User", status=200)
+            return HttpResponse("Submission failed. No username or cloud data given.", status=400)
     else:
         return HttpResponse(status=400)
 

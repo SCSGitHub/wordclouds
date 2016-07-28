@@ -116,6 +116,10 @@
     </li>
 </div>
 
+<form name="cloud_form" id="cloud_form" method="POST" action="{% url 'wordclouds:submit' %}">
+	<input type="hidden" id="cloud_data" name="cloud_data" value="" />
+</form>
+
 <script src="{% static 'wordclouds/scripts/cloud.js' %}"></script>
 
 </body>

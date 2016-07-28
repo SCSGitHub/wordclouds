@@ -8,7 +8,7 @@ var input_senses;
 // 		{
 // 			sense_number: 0,
 // 			pos: "n",
-// 			synonym_list: 
+// 			synonym_list:
 // 				[
 // 					{word:"tent", sense:"tent.n.1", lemma:"tent"},
 // 					{word:"camp", sense:"camp.v.1", lemma:"camp"},
@@ -16,7 +16,7 @@ var input_senses;
 // 		},
 // 	]},
 // ];
-var sentence = []; 
+var sentence = [];
 var word_scores = {};
 var full_sentence = "";
 
@@ -25,14 +25,14 @@ var cloud = [];
 	//[ {
 	// 	sentence_word:"sample word",
 	// 	syn_list:
-	// 		[ 
+	// 		[
 	// 			{word:"similar_word", sense:"similar_word.n.1", lemma:"lemma", abstraction_level: "concrete"},
 	// 		]
 	// },]
 
 //global variables
 //var problem_id = 2;//getRandomInt(1,5); //get as an input
-var score = 0; 
+var score = 0;
 var min_score = 40;
 var target_score = 40;
 var min_per_word = 3;
@@ -106,9 +106,9 @@ function loadSentence(){
 			$(abstract_list).append(add_button);
 		$(sentence_div).find(".word_name").html("(0) "+word_of_sentence);
 		}
-		
+
 		var prepared_column = $("#word_sentence_template").html();
-		
+
 		$("#sentence").append(prepared_column);
 		$('div[id=word_sentence_'+i+']').collapsible({
 
@@ -227,7 +227,7 @@ function submitCloud(){
 	}else{
 		//continue
 	}
-	//create output: 
+	//create output:
 	//for each word-object in cloud, fill in syn_list[] with each {word, sense, lemma}
 	var words_array = $("#sentence").find(".word_column");
 	for(var j = 0; j<words_array.length; j++){
@@ -237,7 +237,7 @@ function submitCloud(){
 		cloud_column.sentence_word = sentence_word_;
 
 		word_li_array = $("#word_sentence_"+j).find("li");
-		for (var i=0; i<word_li_array.length; i++){ 
+		for (var i=0; i<word_li_array.length; i++){
 			word_li = word_li_array[i];
 			if(! $(word_li).hasClass("add_button")){
 				word_ = $(word_li).find(".word_text").html();
@@ -246,24 +246,24 @@ function submitCloud(){
 				abstraction_level_ = $(word_li).parent().attr("abstraction");
 
 				var word_to_add = {word:word_, sense:sense_, lemma:lemma_, abstraction_level:abstraction_level_};
-				cloud_column.syn_list.push(word_to_add);	
-			}			
+				cloud_column.syn_list.push(word_to_add);
+			}
 		}
 		cloud[j]=cloud_column;
 	}
 	console.log(cloud);
 	var output = {problem_id: problem_id, cloud: cloud};
 	var output_str = JSON.stringify(output);
+	var form = document.getElementById("cloud_form");
+	var cd_elem = form.elements["cloud_data"]
+	cd_elem.value = output_str;
 
-	$.post(url_submit, {cloud_data: output_str}, function(response){
-		console.log("response: "+response);
-		if (response == "ok" ){
-			window.location.replace(url_completed);
-		}else{
-			alert("No user logged in");
-		}
-	});
-
+	if(cd_elem.value.length > 0) {
+		form.submit();
+	}
+	//There should be something here to paste output_str into a visible
+	//div for the user. For copy and paste into an email if something is wrong.
+	else { alert("No cloud data was submitted!"); }
 }
 
 function getSensesFromInput(data){
