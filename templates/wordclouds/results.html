@@ -32,9 +32,7 @@
 	<div id=problem style="color:#eee; font-size:1.7em;">Select a problem</div>
 
 	<button class="button collapse_btn" id="toggle_abstract" style="margin:2px">Toggle Abstract</button><br>
-	<div class="more_info" style="display:none">
-		<div id="my_abstract" style="color:#eee; max-width:80vw;">Select a problem</div>
-	</div>
+	<div id="my_abstract" style="color:#eee; max-width:80vw; display:none">Select a problem</div>
 
 	<img id="lightning" src="http://i488.photobucket.com/albums/rr250/KimiVengenz/Textures/Lightning-psd7258.png" style="position:fixed; width:100vw; top:0; display:none">
 
@@ -65,7 +63,7 @@
 	</div>
 
 	<br><br>
-	<button class="button collapse_btn" id="problems_by_top_score_btn" style="margin:2px">List problems by top score (toggle)</button><br>
+	<button class="button more_info_btn" id="problems_by_top_score_btn" style="margin:2px">List problems by top score (toggle)</button><br>
 	<div id="problems_by_top_score" style="background-color:#eee; border-radius:5px; padding:10px; max-width:95vw; display:none"></div>
 
 	<div id="paper_template" style="display:none">
@@ -73,7 +71,7 @@
 				<h3 style="margin:2px 0">Paper Extraction</h3>
 				<div class="score" style="color:#F39"></div>
 				Overlapping synonyms: <div class="synonyms" style="color:#283">Synonym, and, or, others</div>
-				<button class="button collapse_btn" style="margin:2px">toggle more info</button>
+				<button class="button more_info_btn" style="margin:2px">toggle more info</button>
 				<div class="more_info" style="display:none">
 					ID: <div class="paper_id" style="color:black"></div>
 					Abstract: <div class="abstract" style="color:black"></div>
