@@ -20,7 +20,7 @@
 	</script>
 
 </head>
-<body style="background-color:rgb(0, 136, 187); height:100%; width:100%; padding:15px;">
+<body style="background-color:rgb(0, 136, 187); padding:15px;">
 
 	<h1 style="color:#eee; font-weight:200; font-size:40px">Making it Rain: where the clouds collide</h1>
 	<select id="dropdown"  onchange = "changeProblem(this)" style="max-width:90vw;">
@@ -55,19 +55,31 @@
 		<button class="rain_btn center" value="go" id="update_related_papers_button">Perform Rain Dance</button>
 	</div>
 
-	<h2> Thunder rolls and lightning strikes.... </h2>
+	<div>
+		<div style="float:left; margin-right:2vw"><h2> Thunder rolls and lightning strikes.... </h2></div>
+		<div ><button id="save_query" class="rain_btn" onclick="saveQuery()">Save Query</button></div>
+	</div>
 
 	<div id="related_papers" style="border: solid 4px black; border-radius:5px; width: 90vw; margin:10px; max-height:80vh; overflow:auto" class="center"> 
 	 	Select a problem to see related papers
 	</div>
 
-	<br><br>
-	<button class="button more_info_btn" id="problems_by_top_score_btn" style="margin:2px">List problems by top score (toggle)</button><br>
+	<br>
+
+	<button class="button" id="favorite_papers_btn" style="margin:2px">Favorite Papers (toggle)</button><br>
+	<div id="favorite_papers_div" style="background-color:#eee; border-radius:5px; padding:10px; max-width:95vw; display:none"></div>
+
+	<button class="button" id="problems_by_top_score_btn" style="margin:2px">List problems by top score (toggle)</button><br>
 	<div id="problems_by_top_score" style="background-color:#eee; border-radius:5px; padding:10px; max-width:95vw; display:none"></div>
 
+	<!-- Templates -->
 	<div id="paper_template" style="display:none">
 		<div class="paper" style="background:white; color:#28E; margin: 10px; padding:10px; border-radius:5px">
-				<h3 style="margin:2px 0">Paper Extraction</h3>
+				<h3 style="margin:2px 0; display:inline;">Paper Extraction</h3> 
+				<button class="star_button" onclick="starClicked(this)">
+					<div style="" class="star_empty">&#9734;</div>
+					<div style="display:none; position:absolute" class="star_filled">&#9733;</div>
+				</button>
 				<div class="score" style="color:#F39"></div>
 				Overlapping synonyms: <div class="synonyms" style="color:#283">Synonym, and, or, others</div>
 				<button class="button more_info_btn" style="margin:2px">toggle more info</button>
