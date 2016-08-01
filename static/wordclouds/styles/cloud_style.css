@@ -302,3 +302,24 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 .collapse_btn:hover{
 	background-color: #888;
 }
+
+.star_empty{
+    padding-left: 15px;
+    font-size: 20px;
+    color: gray;
+    position:absolute;
+}
+
+.star_filled{
+    padding-left: 15px;
+    font-size: 20px;
+    color: gold;
+    position:absolute;
+}
+
+.star_button{
+	display:inline;
+	background: none;
+	border: none;
+	position:relative;
+}
