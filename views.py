@@ -49,7 +49,12 @@ def cloud(request):
         hash_string = username + hash_key + str(trial) + str(problem_id)
         request.session["completion_code"] = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
 
-        return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id })
+        #get the problem's word senses in JSON representation for the UI
+        problem = Problem.objects.get_problem_with_words(problem_id)
+        problem_serialized = ProblemSerializer(problem).data
+        problem_json = JSONRenderer().render(problem_serialized)
+
+        return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id, 'problem_data': problem_json })
     else:
         return redirect("wordclouds:username")
 
