@@ -86,7 +86,7 @@ function getSimilarPapers(thisPaper){
 	//tfidf scores
 	if(score_mode=="tfidf"){
 		score_tfidf(); //{paper_id:score, paper_id: score}
-	}else if(score_mode=="lsi_scores"){
+	}else if(score_mode=="lsi"){
 		score_lsi(); //{paper_id:score, paper_id: sc
 	}
 
@@ -311,19 +311,28 @@ function score_tfidf(){
 }
 function score_lsi(){
 	var bow = []; //custom word cloud the user has made, like: ["array", "of", "strings"]
+	var query = "";
+
 	for (term of myCustomPaper.terms){
 		for (synonym of term.synonyms){bow.push(synonym.synonym);}
 	}
-	console.log(JSON.stringify(bow));
+	query = JSON.stringify(bow);
+
 	//also pass the lsi scoring function a parameter with the number of dimensions desired
 	$.ajax({
 		async: false,
 		type: 'GET',
 		url: url_lsi,
-		data: {query:JSON.stringify(bow), dimensions:lsi_dimensions.toString()},
+		data: {query:query, dimensions:lsi_dimensions},
 		success: function(data){
 			lsi_scores = data;
 		}
+	})
+	.fail(function() {
+		console.log("No response received from similarity_query request.");
+		console.log("URL used:" + url_lsi);
+		console.log("Dimensions:" + lsi_dimensions);
+		console.log("Query:" + query);
 	});
 }
 
