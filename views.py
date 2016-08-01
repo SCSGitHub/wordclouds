@@ -29,11 +29,14 @@ def index(request):
 def cloud(request):
     if "username" in request.session:
         problem_id = ProblemAttempts.get_new_id()
+        username = request.session["username"]
+        trial = request.session["trial"] if request.session['trial'] else 0
+
         problem_attempt = ProblemAttempts(
             problem_id=problem_id,
             session_key=request.session.session_key,
-            user=request.session['username'],
-            trial=request.session["trial"],
+            user=username,
+            trial=trial,
             start_date=datetime.now()
         )
         problem_attempt.save()
@@ -41,6 +44,11 @@ def cloud(request):
         abstract = Problem.objects.get(id=problem_id).abstract
         if type(abstract) != str or len(abstract) < 1:
             abstract = "Sorry, there is no abstract available."
+
+        #create completion code at this stage
+        hash_string = username + hash_key + str(trial) + str(problem_id)
+        request.session["completion_code"] = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+
         return render(request, 'wordclouds/cloud.html', { 'abstract': abstract, 'problem_id': problem_id })
     else:
         return redirect("wordclouds:username")
@@ -141,10 +149,9 @@ def submit(request):
             problem_id =  request.session['problem_id']
             username = request.session["username"]
             trial = request.session["trial"] if request.session['trial'] else 0
+            md5_hash = request.session["completion_code"]
             submit_date = datetime.now()
 
-            hash_string = username + hash_key + str(trial) + str(problem_id)
-            md5_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
             post = json.loads(request.POST['cloud_data'])
 
             #save synonym data
@@ -172,7 +179,6 @@ def submit(request):
             problem.save()
 
             #store in session for next page
-            request.session['completion_code'] = md5_hash
             request.session['completion_timestamp'] = '{:%m/%d/%Y %H:%M:%S}'.format(submit_date)
 
             logger.debug(post)
@@ -180,7 +186,11 @@ def submit(request):
 
             return redirect("wordclouds:completed_cloud")
         else:
-            return HttpResponse("Submission failed. No username or cloud data given.", status=400)
+            failure_response = """Submission failed. No username or cloud data given.<br />
+            In order to get credit, please email this message along with this code:<br />
+            """
+            failure_response = failure_response + request.session["completion_code"]
+            return HttpResponse(failure_response, status=400)
     else:
         return HttpResponse(status=400)
 
@@ -214,7 +224,7 @@ def similarity_query(request, method):
 
         if method == 'lsi':
             model_label = "LSI"
-            lsi_dimensions = int(request.GET['lsi_dimensions'])
+            lsi_dimensions = int(request.GET['dimensions'])
             similarity_model = LSI(corpus_list, lsi_dimensions)
         else:
             model_label = "TF-IDF"
