@@ -1,13 +1,35 @@
 from gensim import corpora, models as gensim_models, similarities
 from django.db import models
+from nltk.stem.porter import PorterStemmer
 from .models import Problem
-import logging
+import logging, string
 
 """
 Modeling the data
 """
 
+logger = logging.getLogger(__name__)
+
 class DocumentModeling():
+    def __init__(self):
+        """
+        Prepare instance vars to be reused by child classes
+        """
+        self.filter_chars = string.punctuation + "“”";
+        self.stemmer = PorterStemmer()
+
+    def prepare_words(self, problem_word_list):
+        """
+        Arguments:
+        problem_word_list: list(list(str))
+        """
+        for problem_index, word_list in enumerate(problem_word_list):
+            for word_index, word in enumerate(word_list):
+                word = word.lower()
+                punc_replace = word.maketrans({key: None for key in self.filter_chars})
+                word = word.translate(punc_replace)
+                problem_word_list[problem_index][word_index] = self.stemmer.stem(word)
+
     def query(self, problem):
         input_vector = self.dictionary.doc2bow(problem) #create vector like [ [0,1], [2,1], [4,2]]
         vec_model = self.model[input_vector]
@@ -31,6 +53,15 @@ class DocumentModeling():
 class TfIdf(DocumentModeling):
 
     def __init__(self,problems):
+        """
+        Arguments:
+            problems: list of words per problem (list(list(str)))
+        """
+        super().__init__()
+        super().prepare_words(problems)
+
+        #global logger
+        #logger.debug("Excerpt of problem words stemmed: {}".format(problems[1]))
 
         #this dictionary lists each unique word with its word_id
         self.dictionary = corpora.Dictionary(problems) #eg {'an': 0, 'many': 1}
@@ -46,6 +77,16 @@ class TfIdf(DocumentModeling):
 class LSI(DocumentModeling):
 
     def __init__(self, problems, num_topics):
+        """
+        Arguments:
+            problems: list of words per problem (list(list(str)))
+        """
+
+        super().__init__()
+        super().prepare_words(problems)
+
+        #global logger
+        #logger.debug("Excerpt of problem words stemmed: {}".format(problems[1]))
 
         #this dictionary lists each unique word with its word_id
         self.dictionary = corpora.Dictionary(problems) #eg {'an': 0, 'many': 1}
