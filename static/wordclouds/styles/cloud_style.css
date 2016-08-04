@@ -323,3 +323,14 @@ a.ui-collapsible-heading-toggle.ui-btn.ui-icon-plus.ui-btn-icon-left.ui-btn-inhe
 	border: none;
 	position:relative;
 }
+
+.slider.ui-slider.ui-slider-horizontal.ui-widget.ui-widget-content.ui-corner-all{
+	height:10px;
+	width:20vw;
+	margin-left:10px;
+	margin-top:10px;
+}
+.ui-state-hover{
+	background:inherit;
+	border:black;
+}

@@ -14,17 +14,21 @@ var lsi_dimensions = 100;
 var connection_scores = {};
 var highest_score = 0;
 var entropy_strength = 0; //0-1, 1 is 100%
+var parallel_preference_scoring_weight = 0; //0-1, 1 is 100%
+
+var paper_order_number = 1;
 
 //for debugging and extraction:
 var all_papers = [];
 var all_connections = [], cutoff_score = 0.05;
 
 $(document).ready(function(){
+
 	//find all the connections for all papers (is it expensive?)
-	console.log("number of papers: "+data.length);
+	//console.log("number of papers: "+data.length);
 
 	for (paper of data){
-		//if(paper != data[0]){break;}//just get the first one, for DEBUGGING only
+		//	if(paper != data[0]){break;}//just get the first one, for DEBUGGING only
 		filterAbstractWords(paper);
 		rs = getSimilarPapers(paper);
 		paper.highest_score = highest_score;
@@ -43,6 +47,7 @@ $(document).ready(function(){
 	$("#problems_by_top_score").html(problems_by_top_score);
 	myPaper = copy({}, data[0]);
 	myCustomPaper = copy({}, myPaper);
+
 });
 
 function addWordsOfSentence(myPaper){
@@ -72,10 +77,18 @@ function getSimilarPapers(thisPaper){
 	var results = [];
 
 	highest_score = 0;
-	var mylist = [];
+	var mylist = [], this_paper_terms = []; //mylist is all synonyms, this_paper_terms is synonyms grouped by word in source paper
 	for(term of thisPaper.terms){
-		for(syn of term.synonyms){ mylist.push(syn.synonym.trim());};
+		var word_bin = [];
+		for(syn of term.synonyms){
+			var word = syn.synonym.trim();
+			mylist.push(word);
+			word_bin.push(word);
+		}
+		this_paper_terms.push(word_bin);
 	}
+	mylist = mylist.sort();
+
 	//words to forbid in problem extraction:
 	var forbidden_words = $("#forbidden_words").html().split(",");
 	for(var i = 0; i<forbidden_words.length; i++){ //remove empty strings, white space
@@ -91,7 +104,6 @@ function getSimilarPapers(thisPaper){
 	}
 
 	//find overlapping synonyms
-	mylist = mylist.sort();
 	for(var i=0; i<data.length; i++){
 		var theirPaper = data[i];
 		if (theirPaper.id == thisPaper.id){ continue; } //is this my paper?
@@ -106,9 +118,9 @@ function getSimilarPapers(thisPaper){
 		}
 		if(forbidden){continue;}
 
-
 		//get the overlapping synonyms
-		var overlap = []; //separate element for each term's overlapping terms
+		var overlap = []; //overlapping words grouped by target problem terms
+		var overlap_all = []; //all the overlapping terms in one bin
 		var j=0, overlap_count = 0, syn_count = 0;
 		for (term of theirPaper.terms){
 			//get the terms for this word:
@@ -116,6 +128,7 @@ function getSimilarPapers(thisPaper){
 			for (wordobj of term.synonyms){ theirlist.push(wordobj.synonym); }
 			var overlap_term = intersect_safe(mylist,theirlist.sort());
 			overlap[j++] = overlap_term;
+			overlap_all = overlap_all.concat(overlap_term);
 			overlap_count += overlap_term.length;
 			syn_count += theirlist.length;
 		}
@@ -136,28 +149,72 @@ function getSimilarPapers(thisPaper){
 				score = 1;
 		}
 
-		if(entropy_strength>0){
-			//Shannon entropy: H(A) = sum_i=0_to_n: -1 * p_i * log_2 (p_i) ; where p_i
-			//is probablility of a synonym coming from each bin
-			probabilities = [];
-			for(word_overlap of overlap){
-				probabilities.push(word_overlap.length/overlap_count);
-			}
-			H = 0;
-			for (p of probabilities){
-				if(p>0){
-					H += (-1) * p * Math.log2(p);
+		score = entropyScoringFunction(overlap, overlap_count, score);
+
+		var overlap_group_by_source = [];
+		for(term_list of this_paper_terms){
+			source_term_overlap = [];
+			for(word of term_list){
+				if(overlap_all.indexOf(word)> -1){
+					source_term_overlap.push(word);
 				}
 			}
-			console.log("H: "+ H);
-			var max_H = Math.log2(probabilities.length);
-			var H_normalized = H/max_H;
-			var shannon_score = H_normalized*score;
-			console.log("score: "+ score);
-			console.log("Shannon score: "+ shannon_score);
-			score = (entropy_strength)*shannon_score + (1-entropy_strength)*score;
+			overlap_group_by_source.push(source_term_overlap);
+		}
+		//needs to go in both directions. first we need to re-sort the synonyms into bins for the source problem's terms
+		score = entropyScoringFunction(overlap_group_by_source, overlap_count, score);
+
+		//"parallel preference" scoring:
+		//prefer 1:1 mappings where, given mapping (a_1 -> b_3)
+		//the best mapping of a_2 is (a_2 -> b_4)
+		//eg, if two words in a row map to each other thats probably good
+
+		//1. force 1:1 mapping of terms of the source paper to the target paper
+		//2. for each mapping, check if there are "chained" sequential mappings. if so, keep looking for more
+
+		//scoring:  score = score * [ 1+ (+1 for each chained mapping)/(max possible mappings) ]
+		if(parallel_preference_scoring_weight>0){
+			var mapping = []; //for each term in source extraction: the index of the term in the target extraction with best mapping
+			p_score = 0, p_score_max = 0;
+
+
+			for (term of thisPaper.terms){
+				//find best mapping
+				var my_term_synonyms = [];
+				for(s of term.synonyms){my_term_synonyms.push(s.synonym);}
+				my_term_synonyms.sort();
+				var best_overlap_score = 0;
+				var best_overlap_index = null;
+				for (var j=0; j<overlap.length; j++){
+					var overlap_one_term = overlap[j];
+					var overlap_score = intersect_safe(my_term_synonyms,overlap_one_term).length;
+					if(overlap_score > best_overlap_score){ 
+						best_overlap_score = overlap_score; 
+						best_overlap_index = j;
+					}
+				}
+				mapping.push(best_overlap_index);
+			} 
+			for (var source_index = 0; source_index < mapping.length; source_index++){
+				p_score_max +=1;
+				try{
+				 if(mapping[source_index+1] == mapping[source_index]+1){p_score +=1;}  //check: if [0->3], does [1->4] ? 
+				}catch(e){}//tryed to access unavailable element
+
+				//for debugging / seeing parallel connections: 
+				var target_index = mapping[source_index];
+				if(target_index !=null ){
+					if(mapping[source_index+1] == target_index + 1) { //score!
+						// console.log(thisPaper.terms[source_index].term + " :: " + theirPaper.terms[target_index].term)
+						// console.log(thisPaper.terms[source_index+1].term + " :: " + theirPaper.terms[target_index+1].term);
+					}
+				}
+			}
+			var P = 1 + 5*p_score/p_score_max; //(>=1)
+			score = parallel_preference_scoring_weight*(score*P) + (1 - parallel_preference_scoring_weight)*(score);
 		}
 
+		//all_connections isn't used in the interface, only as a storage bin for exporting the connections found (eg to d3 network graph)
 		if(score>cutoff_score){
 			all_connections.push({"source":thisPaper.id, "target":theirPaper.id, "value":score*100})
 		}
@@ -179,7 +236,7 @@ function addPaper(paper_and_overlap){
 
 	var template_reset = $("#paper_template").html();
 	var template = $("#paper_template");
-	$(template).find("h3").html(paper.extraction);
+	$(template).find("h3").html(paper_order_number++ + ": "+paper.extraction);
 	$(template).find(".score").html("score: " + myscore);
 	$(template).find(".paper_id").html(paper.id);
 	$(template).find(".abstract").html(paper.abstract);
@@ -202,13 +259,15 @@ function addPaper(paper_and_overlap){
 
 //"save state" functions
 function saveQuery(){
+	console.log("Customized cloud query: ")
 	console.log(myCustomPaper);
 	topRelatedPapers = currentRelatedPapers.slice(0,20);
+	console.log("Top related papers: ")
 	console.log(topRelatedPapers);
 }
 
 function starClicked(me){
-	console.log("clicked star");
+	//console.log("clicked star");
 	star = $(me).find(".star_filled");
 	$(star).toggle();
 	var favorite_paper_id = $(me).parent().find(".paper_id").html();
@@ -216,6 +275,7 @@ function starClicked(me){
 	if($(star).is(":visible")){
 		//add paper to favorites
 		favorite_papers.push(favorite_paper_id);
+		console.log("star paper: " + favorite_paper_id);
 	}else{
 		//remove paper from favorites (if its there)
 		var index = favorite_papers.indexOf(favorite_paper_id);
@@ -260,7 +320,7 @@ function changeProblem(me){
 	var option = me.options[me.selectedIndex];
 	var id = $(option).attr("paperid");
 	var value = $(option).html();
-	console.log("id: "+id);
+	console.log("new problem id: "+id);
 	for(var i=0; i<data.length; i++){ //find this paper
 		if(data[i].id == id ){
 			myPaper = copy(myPaper, data[i]);
@@ -275,30 +335,81 @@ function changeProblem(me){
 	$("#sentence_list").html("");
 
 	currentRelatedPapers = getSimilarPapers(myPaper);
+	paper_order_number = 1;
 	for (paper_and_overlap of currentRelatedPapers){
 		addPaper(paper_and_overlap);
 	}
 
 	addWordsOfSentence(myPaper);
 	lightning();
+	saveQuery();
 }
 
 function updateRelatedPapers(){
 	$("#related_papers").html("");
 	currentRelatedPapers = getSimilarPapers(myCustomPaper);
+	paper_order_number = 1;
 	for (paper_and_overlap of currentRelatedPapers){
 		addPaper(paper_and_overlap);
 	}
 	lightning();
+	saveQuery();
 }
 
 //scoring functions
+
+//"Entropy scoring"
+// - overlap is an array with the list of overlapping synonyms for each term
+//     eg. overlap = [["synonyms","for","term","one"], ["syns","for","2nd","word"]];
+// - overlap count is the total number of synonyms
+// - score is the Jaccard overlap scoring.
+//returns: the new score value
+function entropyScoringFunction(overlap, overlap_count, score){		
+	if(entropy_strength>0){
+			//Shannon entropy: H(A) = sum_i=0_to_n: -1 * p_i * log_2 (p_i) 
+			//where p_i is probablility of a synonym coming from each bin
+			// probabilities = [];
+			// for(word_overlap of overlap){
+			// 	probabilities.push(word_overlap.length/overlap_count);
+			// }
+			// H = 0;
+			// for (p of probabilities){
+			// 	if(p>0){
+			// 		H += (-1) * p * Math.log2(p);
+			// 	}
+			// }
+			// var max_H = Math.log2(probabilities.length);
+			// var H_normalized = H/max_H;
+			// var shannon_score = H_normalized*score;
+			// //console.log("Shannon score: "+ shannon_score);
+			// score = (entropy_strength)*shannon_score + (1-entropy_strength)*score;
+
+			probabilities = [];
+			for(word_overlap of overlap){
+				probabilities.push(word_overlap.length/overlap_count);
+			}
+			H = 0;
+			for (p of probabilities){
+				if(p>0){
+					H += (-1) * p * Math.log2(p);
+				}
+			}
+			var max_H = Math.log2(probabilities.length);
+			var H_normalized = H/max_H;
+			var shannon_score = H_normalized*score;
+			//console.log("Shannon score: "+ shannon_score);
+			score = (entropy_strength)*shannon_score + (1-entropy_strength)*score;
+
+		}
+	return score;
+}
+
 function score_tfidf(){
 	var bow = []; //custom word cloud the user has made, like: ["array", "of", "strings"]
 	for (term of myCustomPaper.terms){
 		for (synonym of term.synonyms){bow.push(synonym.synonym);}
 	}
-	console.log(JSON.stringify(bow));
+	//console.log(JSON.stringify(bow));
 	$.ajax({
 		async: false,
 		type: 'GET',
@@ -329,10 +440,10 @@ function score_lsi(){
 		}
 	})
 	.fail(function() {
-		console.log("No response received from similarity_query request.");
-		console.log("URL used:" + url_lsi);
-		console.log("Dimensions:" + lsi_dimensions);
-		console.log("Query:" + query);
+		// console.log("No response received from similarity_query request.");
+		// console.log("URL used:" + url_lsi);
+		// console.log("Dimensions:" + lsi_dimensions);
+		// console.log("Query:" + query);
 	});
 }
 
@@ -388,6 +499,26 @@ function lightning(){
 		}, 100);
 	}, 100);
 }
+
+//sliders
+$("#entropy_slider").slider({
+	change: function( event, ui ) {
+		entropy_strength = ui.value/100;
+		myCustomPaper.entropy_value = entropy_strength;
+	},
+	min:0,
+	max:100,
+	value:0,
+});
+$("#parallel_slider").slider({
+	change: function( event, ui ) {
+		parallel_preference_scoring_weight = ui.value/100;
+		myCustomPaper.parallel_scoring_value = parallel_preference_scoring_weight;
+	},
+	min:0,
+	max:100,
+	value:0,
+});
 
 //event listeners
 
@@ -454,7 +585,7 @@ $("#update_related_papers_button").on("click", function(){
 
 $("#forbidden_words").keydown(function(e){
 	if (e.keyCode === 13) {
-		console.log("blur");
+		//console.log("blur");
 		$(e.target).blur();
 		updateRelatedPapers();
 		return false;
