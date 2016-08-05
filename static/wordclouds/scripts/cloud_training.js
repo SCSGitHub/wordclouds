@@ -1,5 +1,15 @@
+/*
+Training step for word-cloud interface
+This page is essentially a copy of results.js with reduced features and hard-coded input data
+(results.js is more fully commented)
+
+The user is required to drag items from the Word Bank into the appropriate General/Specific bin
+
+*/
+
 //input data structures
-var input_sentence = getSentence(); 
+//for training page, these are just hard coded:
+var input_sentence = sentence_id: 0, user_id: 0, words: ["dog", "run", "cook"]; 
 var input_senses={
 	"dog":{
 		sense_number: 0,
@@ -51,7 +61,7 @@ var input_senses={
 	},
 };
 
-var sentence = input_sentence.words;
+var sentence = input_sentence.words; //array of the terms in the problem extraction
 //output data structure:
 var cloud = [ 
 	{
@@ -63,8 +73,24 @@ var cloud = [
 	},
 ];
 
-
 //helper functions
+
+/*
+	Adds a word to a term's abstract or concrete bin
+	First, it fills in the components of the word_item_template
+	Next, it inserts the element into the word bin
+	
+	Called when user enters a word in the input field and:
+		Clicks plus sign
+		Hits Enter
+
+	Does not add the word if:
+		the text field is blank 
+		the word is the same as the extraction term
+
+	Parameters: 
+	me: the 'submit' button (plus sign) that is clicked to add the word
+*/
 function addWord(me){
 	var word_list_end = $(me).parent();
 	var entry_box = $(me).parent().find('a').find('input')
@@ -83,6 +109,9 @@ function addWord(me){
 	$(entry_box).val('');
 }
 
+/*
+	Similar to addWord, but used in the training page to pre-load the examples
+*/
 function addWordManual(ul, word){
 	var word_text = word;
 	if(/\S/.test(word_text)==false){
@@ -98,7 +127,20 @@ function addWordManual(ul, word){
 	$('div[data-role=collapsible]').collapsible();
 }
 
-//function to load sentence
+/*
+	Load the terms of a selected problem extraction into the customization pane
+		for each term in the problem extraction:
+			- fills in the componenets of word_sentence_template element 
+				(has genera/specific word bins)
+			- adds an 'add word' input field to the word_sentence_div
+			- inserts the term in the HTML document
+			- adds jquery.collapsible functionality
+			- resets the word_sentence_template to a blank template
+			- adds the term to the output 'cloud' data structure
+
+	Special Cases:
+		if the term is a 'stop-word', it is grey and cannot recieve synonyms
+*/
 function loadSentence(){
 	var original_template = $("#word_sentence_template").html();
 
@@ -166,7 +208,25 @@ function loadSentence(){
 	addWordManual(ul, "work out");
 }
 
-//function to load word sense (suggestion list):
+/*
+	Load the suggested synonyms for a term into the Word Bank
+		- look in the input_senses data structure for the term's synonyms
+		For each word-sense in input_senses:
+			- create a word_sense_div to hold its synonyms 
+			For each synonym in the word-sense:
+				- add the synonym to word_sense_div
+			- append the word_sense_div to the Word Bank
+			- add jquery.sortable functionality
+
+	Special Cases:
+		synonym is same as term: do not include
+		word-sense does not have any synonyms: do not include
+
+	Parameters:
+		word_number: the 0-indexed position of the word in sentence[]
+			(sentence[] is an array of the terms in the problem extraction)
+
+*/
 function loadSenses(word_with_senses){
 
   	var original_template = $("#word_sense_template").html();
@@ -222,6 +282,12 @@ function loadSenses(word_with_senses){
 
 }
 
+/*
+	Proceed to the actual Word Cloud interface when training is complete
+
+	Special Cases:
+		Training is not complete: alert user, do not leave page. 
+*/
 function next(){
 	if($("#sense_0").find("li").length==0){
 		window.location.replace(cloud_url);
@@ -230,12 +296,9 @@ function next(){
 	}
 }
 
-function getSentence(){
-	//get sentence for api
-	return {sentence_id: 0, user_id: 0, words: ["dog", "run", "cook"]};
-
-}
-
+/*
+	Use the API to get the synonyms for "entropy"
+*/
 function getSynonyms(){
 	var url = 'http://scsweb-d11.andrew.cmu.edu:81/wordclouds/synonyms/entropy.n.02';
 	$.get(url, function(data){
@@ -252,7 +315,7 @@ window.onload = $(function() {
 		cancel: ".add_button",
 		connectWith: '.word1',
 		dropOnEmpty: true,
-	});//.disableSelection();
+	});
 
 	$('#instructions').collapsible({
 		collapse: function(ev, ui){
@@ -271,19 +334,24 @@ window.onload = $(function() {
 });
 
 //event handlers
+
+//Delete Button next to word: remove word element from list
 $('body').on('click', '.ui-icon-delete', function(){
 	$(this).parent().remove();
 });
+//Add word (+) button: add the word in the input field
 $('body').on('click', '.new-word', function(){
 	addWord(this);
 	console.log("added");
 });
+//Hitting enter after typing word should also add the word 
 $('body').on('keyup', '.add-word-input', function (e) {
-	if (e.keyCode == 13) {
+	if (e.keyCode == 13) { //'Enter' key
 		var enter_button = $(this).parent().parent().parent().find(".new-word");
 		addWord(enter_button);
 	}
 });	
+//after reading instructions, scroll down to activity
 $('#start').on('click', function(){
 	//adjust div size
 	$(this).parents().eq(1).height("auto");

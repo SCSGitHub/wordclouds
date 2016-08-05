@@ -10,6 +10,8 @@
 	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+
 	<link rel="stylesheet" href="{% static 'wordclouds/styles/cloud_style.css' %}">
 
 	<!-- <script src="{% static 'wordclouds/scripts/data1.js' %}"></script> -->
@@ -44,6 +46,12 @@
 			<option value="tfidf">tf-idf</option>
 			<option value="lsi">LSI</option>
 		</select>
+		Scoring weights: <br>
+		Entropy: When on, problems with overlap on many words are prefered to problems with overlap on one word
+		<div class="slider" id="entropy_slider"></div>
+		Parallel word scoring: Boost the score of problems with two matching words in a row, eg "bake cake" and "cook food"
+		<div class="slider" id="parallel_slider"></div>
+
 		<div id="lsi_dimensions_input" style="display:none;"> Number of LSI Dimensions: <input type="text" id="lis_dimensions" class="nice_input" style="width:40px" onkeyup="changeLsiDimensions(this)" placeholder="100"></div>
 
 		<div id="customize">

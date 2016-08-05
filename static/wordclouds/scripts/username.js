@@ -1,3 +1,7 @@
+/*
+	User enters username and proceeds to cloud interface
+	Username is stored in session and on backend
+*/
 function go(){
 	var username = "";
 	username = $("#username").val();
