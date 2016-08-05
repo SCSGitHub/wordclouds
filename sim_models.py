@@ -1,5 +1,6 @@
 from gensim import corpora, models as gensim_models, similarities
 from django.db import models
+from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from .models import Problem
 import logging, string
@@ -18,17 +19,20 @@ class DocumentModeling():
         self.filter_chars = string.punctuation + "“”";
         self.stemmer = PorterStemmer()
 
-    def prepare_words(self, problem_word_list):
+    def prepare_words_from_list(self, problem_word_list):
         """
         Arguments:
         problem_word_list: list(list(str))
         """
+
         for problem_index, word_list in enumerate(problem_word_list):
+            word_list = [word for word in word_list if word not in stopwords.words('english')]
             for word_index, word in enumerate(word_list):
                 word = word.lower()
                 punc_replace = word.maketrans({key: None for key in self.filter_chars})
                 word = word.translate(punc_replace)
-                problem_word_list[problem_index][word_index] = self.stemmer.stem(word)
+                word_list[word_index] = self.stemmer.stem(word)
+            problem_word_list[problem_index] = word_list
 
     def query(self, problem):
         input_vector = self.dictionary.doc2bow(problem) #create vector like [ [0,1], [2,1], [4,2]]
@@ -58,7 +62,7 @@ class TfIdf(DocumentModeling):
             problems: list of words per problem (list(list(str)))
         """
         super().__init__()
-        super().prepare_words(problems)
+        super().prepare_words_from_list(problems)
 
         #global logger
         #logger.debug("Excerpt of problem words stemmed: {}".format(problems[1]))
@@ -83,7 +87,7 @@ class LSI(DocumentModeling):
         """
 
         super().__init__()
-        super().prepare_words(problems)
+        super().prepare_words_from_list(problems)
 
         #global logger
         #logger.debug("Excerpt of problem words stemmed: {}".format(problems[1]))

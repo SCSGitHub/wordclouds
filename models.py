@@ -204,18 +204,29 @@ class ProblemSynonyms():
     """
 
     def __init__(self):
-        self.words = []
         cursor = connection.cursor()
-        cursor.execute('SELECT wp.turk_id AS `id`, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id')
+        cursor.execute('SELECT wp.turk_id AS `id`, wvwpp.words FROM wc_problems wp LEFT JOIN wc_v_words_per_problem wvwpp ON wp.id = wvwpp.problem_id ORDER BY wp.id')
         rows = cursor.fetchall()
-        for row in rows:
-            if type(row[1]) is str:
-                self.words.append(row[1].split("|"))
-            else:
-                self.words.append([])
+        self.words_result = rows
         cursor.close()
+
     def get_words_list(self):
-        return self.words
+        words_list = []
+        for row in self.words_result:
+            if type(row[1]) is str:
+                words_list.append(row[1].split("|"))
+            else:
+                words_list.append([])
+        return words_list
+
+    def get_words(self):
+        words_text = []
+        for row in self.words_result:
+            if type(row[1]) is str:
+                words_text.append(row[1].replace("|", " "))
+            else:
+                words_text.append("")
+        return words_text
 
 
 class Synonym(models.Model):
