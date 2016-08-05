@@ -48,6 +48,7 @@ class ProblemManager(models.Manager):
 
     def get_problem_with_words(self, id):
         problem = self.get(id=id)
+        problem.desc = problem.desc.strip()
         #string.punctuation below also has '-' and '_', which is undesirable
         punc_replace = problem.desc.maketrans({key: None for key in self.char_excl
         })
