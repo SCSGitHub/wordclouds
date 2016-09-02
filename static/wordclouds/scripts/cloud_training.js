@@ -9,7 +9,7 @@ The user is required to drag items from the Word Bank into the appropriate Gener
 
 //input data structures
 //for training page, these are just hard coded:
-var input_sentence = sentence_id: 0, user_id: 0, words: ["dog", "run", "cook"]; 
+var input_sentence = {sentence_id: 0, user_id: 0, words: ["dog", "run", "cook"]};
 var input_senses={
 	"dog":{
 		sense_number: 0,
@@ -357,4 +357,3 @@ $('#start').on('click', function(){
 	$(this).parents().eq(1).height("auto");
 	$(this).remove();
 });
-
